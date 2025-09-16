@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    console.log('Starting...');
+
+    const dna = prompt('Wprowadź ciąg DNA');
+
+    const parsed = dna.replace(/\n/g, ' ').replace(/ /g, '').toUpperCase();
+
+    let splitted = '';
+
+    for(let i = 0; i < parsed.length; i+=3) {
+      splitted = splitted + parsed.slice(i, i+3) + ' ';
+    }
+
+    let colored = splitted.replace(/ATG/g, '<span style="color: green"><b>ATG</b></span>');
+    colored = colored.replace(/TAA/g, '<span style="background: yellow">ATG</span>');
+    colored = colored.replace(/TAG/g, '<span style="background: yellow">ATG</span>');
+    colored = colored.replace(/TGA/g, '<span style="background: yellow">ATG</span>');
+
+    let complementary = '';
+    for(let i = 0; i < splitted.length; i++) {
+      const char = splitted.charAt(i);
+      let complementaryChar;
+      
+      if (char == 'A') complementaryChar = 'T'
+      else if (char == 'C') complementaryChar = 'G'
+      else if (char == 'G') complementaryChar = 'C'
+      else if (char == 'T') complementaryChar = 'A'
+      else complementaryChar = ' '
+      
+      complementary = complementary + complementaryChar;
+    }
+
+    const table = splitted.split(' ');
+    console.log(table);
+    for(let i = 0; i < table.length; i++) {
+      if(table[i] == AAA) {}
+    }
+
+    document.write(colored);
+    document.write('<br>');
+    document.write(complementary);
+    console.log(complementary);
+  </script>
+</body>
+</html>
