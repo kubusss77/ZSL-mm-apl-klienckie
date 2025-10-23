@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      * {
+        margin: 0;
+      }
+      h1 {
+        text-align: center;
+      }
+
+      #board {
+        position: absolute;
+        left: 50%;
+        width: 400px;
+        margin-left: -200px;
+      }
+
+      #cards {
+        width: 400px;
+        height: 400px;
+      }
+
+      #cards img {
+        width: 100px;
+      }
+
+      #end {
+        width: 200px;
+        height: 200px;
+        top: 100px;
+        left: 100px;
+        background: rgb(100, 100, 100, 0.3);
+      }
+    </style>
+    <script>
+      let cardsArray = [];
+      let firstCard = false;
+      let secondCard = false;
+      let score = 0;
+
+      function startGame(time) {
+        document.getElementById('h1').textContent = `MEMORY (${time}[s])`;
+        document.getElementById('start').style.display = 'none';
+
+        const cards = document.getElementById('cards');
+        cards.style.display = 'block';
+
+        const images = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8];
+        const shuffled = shuffle(images);
+
+        let index = 0;
+        for (let i = 0; i < 4; i++) {
+          let columnArray = [];
+          for (let j = 0; j < 4; j++) {
+            columnArray.push(shuffled[index]);
+            index++;
+
+            const hidingCard = document.createElement('img');
+            hidingCard.src = 'img/0.jpg';
+            hidingCard.style.position = 'absolute';
+            hidingCard.style.left = i * 100 + 'px';
+            hidingCard.style.top = j * 100 + 'px';
+            hidingCard.onclick = () => cardClicked(i, j);
+
+            cards.appendChild(hidingCard);
+          }
+          cardsArray.push(columnArray);
+        }
+        console.log(cardsArray);
+      }
+
+      function shuffle(array) {
+        let shuffled = [];
+        const length = array.length;
+
+        for (let i = 0; i < length; i++) {
+          const randomIndex = Math.floor(Math.random() * array.length);
+          const item = array.splice(randomIndex, 1)[0];
+          shuffled.push(item);
+        }
+
+        return shuffled;
+      }
+
+      const cardClicked = (x, y) => {
+        if (cardsArray[x][y]) {
+          if (!secondCard) {
+            const card = document.createElement('img');
+            card.src = 'img/' + cardsArray[x][y] + '.jpg';
+            card.style.position = 'absolute';
+            card.style.left = x * 100 + 'px';
+            card.style.top = y * 100 + 'px';
+
+            // Clicking second card
+            if (firstCard) {
+              secondCard = true;
+              card.id = 'second';
+              cards.appendChild(card);
+
+              // Correct guess
+              if (cardsArray[x][y] == cardsArray[firstCard.x][firstCard.y]) {
+                document.getElementById('first').id = '';
+                document.getElementById('second').id = '';
+                firstCard = false;
+                secondCard = false;
+
+                cardsArray[x][y] = undefined;
+                cardsArray[firstCard.x][firstCard.y] = undefined;
+
+                score++;
+
+                if (score > 7) {
+                  endGame();
+                }
+
+                // Incorrect guess
+              } else {
+                setTimeout(function () {
+                  document.getElementById('first').remove();
+                  document.getElementById('second').remove();
+                  firstCard = false;
+                  secondCard = false;
+                }, 1000);
+              }
+
+              // Clicking first card
+            } else {
+              card.id = 'first';
+              firstCard = { x, y };
+              cards.appendChild(card);
+            }
+
+            console.log('clicked');
+          }
+        }
+
+        function endGame() {
+          const end = document.getElementById('end');
+          end.style.display = 'block';
+          end.style.top = '100px';
+        }
+
+        function resetGame() {
+          const cards = document.getElementById('cards');
+          cards.replaceChildren();
+          cards.display = none;
+
+          cardsArray = [];
+          console.log(cardsArray);
+          let firstCard = false;
+          let secondCard = false;
+          let score = 0;
+        }
+      };
+    </script>
+  </head>
+  <body>
+    <main>
+      <h1 id="h1">MEMORY</h1>
+      <div id="board">
+        <div id="start">
+          <img src="img/czolowa.png" usemap="#start-map" />
+          <map name="start-map">
+            <area onclick="startGame(30)" target="" alt="" title="" coords="44,42,337,64,71,154" shape="poly" />
+            <area onclick="startGame(60)" target="" alt="" title="" coords="85,219,342,110,367,234" shape="poly" />
+            <area onclick="startGame(90)" target="" alt="" title="" coords="96,269,370,301,117,382" shape="poly" />
+          </map>
+        </div>
+        <div id="cards" style="display: none"></div>
+        <div id="end" style="display: none">
+          <p>Wygrałeś!!!</p>
+          <button onclick="resetGame()">Reset gry</button>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>
