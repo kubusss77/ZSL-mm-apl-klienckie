@@ -8,7 +8,7 @@
       * {
         margin: 0;
       }
-      h1 {
+      body {
         text-align: center;
       }
 
@@ -28,21 +28,41 @@
         width: 100px;
       }
 
+      #progress-outer {
+        width: 300px;
+        height: 20px;
+        border: solid black 2px;
+        margin-inline: auto;
+        margin-block: 10px;
+      }
+
+      #progress {
+        width: 100%;
+        height: 100%;
+        background: lightcyan;
+      }
+
       #end {
-        width: 200px;
-        height: 200px;
-        top: 100px;
+        width: 180px;
+        height: 50px;
+        top: 175px;
         left: 100px;
-        background: rgb(100, 100, 100, 0.3);
+        background: rgb(100, 100, 100, 0.9);
+        position: absolute;
+        text-align: center;
+        border-radius: 20px;
+        padding: 10px;
       }
     </style>
     <script>
       let cardsArray = [];
       let firstCard = false;
       let secondCard = false;
-      let score = 0;
+      let score = false;
+      let timeMs;
 
       function startGame(time) {
+        timeMs = time * 1000;
         document.getElementById('h1').textContent = `MEMORY (${time}[s])`;
         document.getElementById('start').style.display = 'none';
 
@@ -70,7 +90,7 @@
           }
           cardsArray.push(columnArray);
         }
-        console.log(cardsArray);
+        console.table(cardsArray);
       }
 
       function shuffle(array) {
@@ -86,7 +106,18 @@
         return shuffled;
       }
 
-      const cardClicked = (x, y) => {
+      function timer(date) {
+        document.getElementById('progress').textContent = new Date().getMilliseconds();
+      }
+
+      function cardClicked(x, y) {
+        if (score === false) {
+          score = 0;
+          const progress = document.getElementById('progress');
+          progress.style.display = 'block';
+          const startdate = new Date();
+          setInterval(() => timer(startDate), 1);
+        }
         if (cardsArray[x][y]) {
           if (!secondCard) {
             const card = document.createElement('img');
@@ -103,15 +134,18 @@
 
               // Correct guess
               if (cardsArray[x][y] == cardsArray[firstCard.x][firstCard.y]) {
+                console.log('correct');
+                console.table(cardsArray);
                 document.getElementById('first').id = '';
                 document.getElementById('second').id = '';
-                firstCard = false;
-                secondCard = false;
 
                 cardsArray[x][y] = undefined;
                 cardsArray[firstCard.x][firstCard.y] = undefined;
+                firstCard = false;
+                secondCard = false;
 
                 score++;
+                console.log('score: ', score);
 
                 if (score > 7) {
                   endGame();
@@ -124,7 +158,7 @@
                   document.getElementById('second').remove();
                   firstCard = false;
                   secondCard = false;
-                }, 1000);
+                }, 700);
               }
 
               // Clicking first card
@@ -137,45 +171,53 @@
             console.log('clicked');
           }
         }
+      }
 
-        function endGame() {
-          const end = document.getElementById('end');
-          end.style.display = 'block';
-          end.style.top = '100px';
-        }
+      function endGame() {
+        const end = document.getElementById('end');
+        end.style.display = 'block';
+        console.log('end');
+      }
 
-        function resetGame() {
-          const cards = document.getElementById('cards');
-          cards.replaceChildren();
-          cards.display = none;
+      function resetGame() {
+        const cards = document.getElementById('cards');
+        cards.replaceChildren();
+        cards.display = 'none';
+        document.getElementById('start').style.display = 'block';
 
-          cardsArray = [];
-          console.log(cardsArray);
-          let firstCard = false;
-          let secondCard = false;
-          let score = 0;
-        }
-      };
+        const progress = document.getElementById('progress');
+        progress.style.display = 'none';
+        progress.textContent = '';
+
+        cardsArray = [];
+        console.log(cardsArray);
+        let firstCard = false;
+        let secondCard = false;
+        let score = 0;
+
+        document.getElementById('end').style.display = 'none';
+      }
     </script>
   </head>
   <body>
-    <main>
-      <h1 id="h1">MEMORY</h1>
-      <div id="board">
-        <div id="start">
-          <img src="img/czolowa.png" usemap="#start-map" />
-          <map name="start-map">
-            <area onclick="startGame(30)" target="" alt="" title="" coords="44,42,337,64,71,154" shape="poly" />
-            <area onclick="startGame(60)" target="" alt="" title="" coords="85,219,342,110,367,234" shape="poly" />
-            <area onclick="startGame(90)" target="" alt="" title="" coords="96,269,370,301,117,382" shape="poly" />
-          </map>
-        </div>
-        <div id="cards" style="display: none"></div>
-        <div id="end" style="display: none">
-          <p>Wygrałeś!!!</p>
-          <button onclick="resetGame()">Reset gry</button>
-        </div>
+    <h1 id="h1">MEMORY</h1>
+    <div id="progress-outer" style="display: block">
+      <div id="progress" style="display: block"></div>
+    </div>
+    <div id="board">
+      <div id="start">
+        <img src="img/czolowa.png" usemap="#start-map" />
+        <map name="start-map">
+          <area onclick="startGame(30)" target="" alt="" title="" coords="44,42,337,64,71,154" shape="poly" />
+          <area onclick="startGame(60)" target="" alt="" title="" coords="85,219,342,110,367,234" shape="poly" />
+          <area onclick="startGame(90)" target="" alt="" title="" coords="96,269,370,301,117,382" shape="poly" />
+        </map>
       </div>
-    </main>
+      <div id="cards" style="display: none"></div>
+      <div id="end" style="display: none">
+        <p>Wygrałeś!!!</p>
+        <button onclick="resetGame()">Reset gry</button>
+      </div>
+    </div>
   </body>
 </html>
