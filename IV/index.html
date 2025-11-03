@@ -24,6 +24,10 @@
         height: 400px;
       }
 
+      .hidingCard {
+        position: absolute;
+      }
+
       #cards img {
         width: 100px;
       }
@@ -39,7 +43,11 @@
       #progress {
         width: 100%;
         height: 100%;
-        background: lightcyan;
+        background: lightgray;
+      }
+
+      #timer {
+        margin-top: -20px;
       }
 
       #end {
@@ -60,6 +68,7 @@
       let secondCard = false;
       let score = false;
       let timeMs;
+      let timerInterval = null;
 
       function startGame(time) {
         timeMs = time * 1000;
@@ -81,16 +90,15 @@
 
             const hidingCard = document.createElement('img');
             hidingCard.src = 'img/0.jpg';
-            hidingCard.style.position = 'absolute';
             hidingCard.style.left = i * 100 + 'px';
             hidingCard.style.top = j * 100 + 'px';
+            hidingCard.className = 'hidingCard';
             hidingCard.onclick = () => cardClicked(i, j);
 
             cards.appendChild(hidingCard);
           }
           cardsArray.push(columnArray);
         }
-        console.table(cardsArray);
       }
 
       function shuffle(array) {
@@ -106,17 +114,26 @@
         return shuffled;
       }
 
-      function timer(date) {
-        document.getElementById('progress').textContent = new Date().getMilliseconds();
-      }
-
       function cardClicked(x, y) {
         if (score === false) {
+          document.getElementById('progress-outer').style.visibility = 'visible';
+          document.getElementById('progress').style.visibility = 'visible';
+
           score = 0;
+
           const progress = document.getElementById('progress');
-          progress.style.display = 'block';
-          const startdate = new Date();
-          setInterval(() => timer(startDate), 1);
+          const timer = document.getElementById('timer');
+          const endDate = Date.now() + timeMs;
+          timerInterval = setInterval(function () {
+            const timeLeft = new Date(endDate - Date.now());
+            timer.textContent = timeLeft.getMinutes() + ':' + timeLeft.getSeconds() + ':' + timeLeft.getMilliseconds();
+            progress.style.width = (timeLeft / timeMs).toFixed(4) * 100 + '%';
+
+            if (timeLeft < 0) {
+              timer.textContent = 'Koniec czasu!';
+              endGame();
+            }
+          }, 10);
         }
         if (cardsArray[x][y]) {
           if (!secondCard) {
@@ -135,7 +152,6 @@
               // Correct guess
               if (cardsArray[x][y] == cardsArray[firstCard.x][firstCard.y]) {
                 console.log('correct');
-                console.table(cardsArray);
                 document.getElementById('first').id = '';
                 document.getElementById('second').id = '';
 
@@ -145,7 +161,6 @@
                 secondCard = false;
 
                 score++;
-                console.log('score: ', score);
 
                 if (score > 7) {
                   endGame();
@@ -167,55 +182,63 @@
               firstCard = { x, y };
               cards.appendChild(card);
             }
-
-            console.log('clicked');
           }
         }
       }
 
       function endGame() {
+        clearInterval(timerInterval);
+        timerInterval = null;
+
+        const hidingCards = document.getElementsByClassName('hidingCard');
+        for (let i = 0; i < hidingCards.length; i++) {
+          hidingCards[i].onclick = null;
+        }
+
         const end = document.getElementById('end');
         end.style.display = 'block';
-        console.log('end');
+
+        document.getElementById('wynik').textContent = 'Punkty: ' + score;
       }
 
       function resetGame() {
         const cards = document.getElementById('cards');
         cards.replaceChildren();
         cards.display = 'none';
-        document.getElementById('start').style.display = 'block';
 
-        const progress = document.getElementById('progress');
-        progress.style.display = 'none';
-        progress.textContent = '';
+        document.getElementById('start').style.display = 'block';
+        document.getElementById('progress-outer').style.visibility = 'hidden';
+        document.getElementById('progress').style.visibility = 'hidden';
+        document.getElementById('timer').textContent = '';
+        document.getElementById('end').style.display = 'none';
 
         cardsArray = [];
-        console.log(cardsArray);
-        let firstCard = false;
-        let secondCard = false;
-        let score = 0;
-
-        document.getElementById('end').style.display = 'none';
+        firstCard = false;
+        secondCard = false;
+        score = false;
       }
     </script>
   </head>
   <body>
     <h1 id="h1">MEMORY</h1>
-    <div id="progress-outer" style="display: block">
-      <div id="progress" style="display: block"></div>
+    <div id="progress-outer" style="visibility: hidden">
+      <div id="progress" style="visibility: hidden"></div>
+      <h4 id="timer"></h4>
     </div>
     <div id="board">
       <div id="start">
         <img src="img/czolowa.png" usemap="#start-map" />
         <map name="start-map">
-          <area onclick="startGame(30)" target="" alt="" title="" coords="44,42,337,64,71,154" shape="poly" />
+          <area onclick="startGame(3)" target="" alt="" title="" coords="44,42,337,64,71,154" shape="poly" />
           <area onclick="startGame(60)" target="" alt="" title="" coords="85,219,342,110,367,234" shape="poly" />
           <area onclick="startGame(90)" target="" alt="" title="" coords="96,269,370,301,117,382" shape="poly" />
         </map>
       </div>
       <div id="cards" style="display: none"></div>
       <div id="end" style="display: none">
-        <p>Wygrałeś!!!</p>
+        <p>Koniec gry!</p>
+        <p id="wynik"></p>
+        <input type="text" value="Twój nick" />
         <button onclick="resetGame()">Reset gry</button>
       </div>
     </div>
