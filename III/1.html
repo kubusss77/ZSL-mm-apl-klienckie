@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <img src="https://gomobi.pl/wp-content/uploads/2011/11/interia.jpg" id="interia">
+  <script>
+    const element = document.getElementById("interia");
+    const step = 10;
+    const min = 100;
+    const max = 500;
+
+    let width = 0;
+    let bigger = true;
+    setInterval(() => {
+      if (bigger) {
+        width += step;
+      } else {
+        width -= step;
+      }
+
+      element.width = width;
+      if(width >= 500 || width <= 0) {
+        bigger = !bigger;
+      }
+    }, 10);
+  </script>
+</body>
+</html>
