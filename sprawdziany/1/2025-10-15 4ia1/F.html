@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      function spiralEncrypt(text) {
+        console.log(text);
+        const spiralWall = Math.floor(Math.sqrt(text.length) + 0.999);
+        console.log(spiralWall);
+
+        let firstRow = '';
+        for (let i = 0; i < spiralWall; i++) {
+          firstRow += text.charAt(i);
+        }
+        console.log(firstRow);
+
+        let rowsInside = '';
+        for (let i = 0; i < spiralWall - 2; i++) {
+          const spiralSubWall = spiralWall - 2 * i;
+          const firstChar = spiralSubWall + 2 * (spiralSubWall - 1) + (spiralSubWall - 2);
+
+          let row = '';
+          for (let j = 0; j < spiralWall; j++) {
+            row += text.charAt(firstChar + j) || '_';
+          }
+          rowsInside += row;
+          console.log(row);
+        }
+      }
+
+      spiralEncrypt('Lorem ipsum dolor sit amet');
+    </script>
+  </body>
+</html>

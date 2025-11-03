@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      body {
+        height: 100vh;
+        width: 100vw;
+      }
+      main {
+        display: grid;
+        grid-template-columns: 100px 100px 100px;
+        grid-template-rows: 100px 100px 100px;
+        gap: 20px;
+
+        height: 340px;
+        width: 340px;
+        margin-inline: auto;
+        margin-top: 50px;
+      }
+
+      div {
+        width: 100px;
+        height: 100px;
+        background: gray;
+
+        font-size: 20px;
+        line-height: 100px;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body ondblclick="klik()">
+    <main>
+      <div id="1" onclick="changeColor(1)">1</div>
+      <div id="2" onclick="changeColor(2)">2</div>
+      <div id="3" onclick="changeColor(3)">3</div>
+      <div id="4" onclick="changeColor(4)">4</div>
+      <div id="5" onclick="changeColor(5)">5</div>
+      <div id="6" onclick="changeColor(6)">6</div>
+      <div id="7" onclick="changeColor(7)">7</div>
+      <div id="8" onclick="changeColor(8)">8</div>
+      <div id="9" onclick="changeColor(9)">9</div>
+    </main>
+  </body>
+  <script>
+    function randomRgb() {
+      const rand = Math.random();
+      return Math.floor(rand * 255);
+    }
+
+    function changeColor(id) {
+      const div = document.getElementById(id);
+      if (div.style.backgroundColor == '') {
+        const rgb = `rgb(${randomRgb()}, ${randomRgb()}, ${randomRgb()})`;
+        document.getElementById(id).style.backgroundColor = rgb;
+      }
+    }
+
+    function klik() {
+      const divs = document.getElementsByTagName('div');
+      for (let i = 0; i < divs.length; i++) {
+        divs[i].style.backgroundColor = '';
+      }
+    }
+  </script>
+</html>

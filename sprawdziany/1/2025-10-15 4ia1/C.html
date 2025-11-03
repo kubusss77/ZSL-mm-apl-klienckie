@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      const txt = 'Lorem ipsum, Dolor sit amet';
+
+      function textStats(txt) {
+        const splitted = txt.split(' ');
+        const words = splitted.length + 1;
+        console.log(splitted);
+
+        let bigLetters = 0;
+        for (let i = 0; i < splitted.length; i++) {
+          if (splitted[i].charAt(0).toUpperCase() == splitted[i].charAt(0)) {
+            bigLetters++;
+          }
+        }
+
+        return `Słów: ${words}, z dużej litery: ${bigLetters}`;
+      }
+
+      console.log(textStats(txt));
+    </script>
+  </body>
+</html>
