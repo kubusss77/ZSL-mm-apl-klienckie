@@ -8,31 +8,63 @@
   <body>
     <script>
       function spiralEncrypt(text) {
-        console.log(text);
-        const spiralWall = Math.floor(Math.sqrt(text.length) + 0.999);
-        console.log(spiralWall);
+        console.log('Text', text);
+        console.log('Length', text.length);
 
-        let firstRow = '';
-        for (let i = 0; i < spiralWall; i++) {
-          firstRow += text.charAt(i);
-        }
-        console.log(firstRow);
+        const wall = Math.ceil(Math.sqrt(text.length));
+        console.log('Wall', wall);
 
-        let rowsInside = '';
-        for (let i = 0; i < spiralWall - 2; i++) {
-          const spiralSubWall = spiralWall - 2 * i;
-          const firstChar = spiralSubWall + 2 * (spiralSubWall - 1) + (spiralSubWall - 2);
-
-          let row = '';
-          for (let j = 0; j < spiralWall; j++) {
-            row += text.charAt(firstChar + j) || '_';
+        let spiral = [];
+        for (let i = 0; i < wall; i++) {
+          let col = [];
+          for (let j = 0; j < wall; j++) {
+            col.push(undefined);
           }
-          rowsInside += row;
-          console.log(row);
+          spiral.push(col);
         }
+
+        let charNumber = 0;
+
+        for (let x = 0; x < wall; x++) {
+          for (let i = x; i < wall - (1 + x); i++) {
+            spiral[x][i] = text.charAt(charNumber) || '_';
+            charNumber++;
+          }
+
+          for (let i = x; i < wall - (1 + x); i++) {
+            spiral[i][wall - (1 + x)] = text.charAt(charNumber) || '_';
+            charNumber++;
+          }
+
+          for (let i = wall - (1 + x); i > x; i--) {
+            spiral[wall - (1 + x)][i] = text.charAt(charNumber) || '_';
+            charNumber++;
+          }
+
+          for (let i = wall - (1 + x); i > x; i--) {
+            spiral[i][x] = text.charAt(charNumber) || '_';
+            charNumber++;
+          }
+
+          if (wall * wall - 1 == charNumber) {
+            if (wall % 2 == 1) {
+              spiral[Math.floor(wall / 2)][Math.floor(wall / 2)] = text.charAt(charNumber) || '_';
+            }
+          }
+        }
+        console.table(spiral);
+
+        let encrypted = '';
+        for (let i = 0; i < wall; i++) {
+          for (let j = 0; j < wall; j++) {
+            encrypted += spiral[i][j];
+          }
+        }
+
+        console.log('Encrypted', encrypted);
       }
 
-      spiralEncrypt('Lorem ipsum dolor sit amet');
+      spiralEncrypt('Lorem ipsum dolor sit amet consensus. Lorem ipsum dolor sit amet consensus');
     </script>
   </body>
 </html>
