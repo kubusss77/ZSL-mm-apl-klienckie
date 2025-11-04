@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="score"></div>
+    <div id="body"></div>
+    <script>
+      let points = 0;
+
+      function genRandomPrime() {
+        let number;
+        let divisibleBy = 0;
+
+        do {
+          divisibleBy = 0;
+
+          number = Math.floor(Math.random() * 100);
+
+          for (let i = 1; i <= 100; i++) {
+            if (number % i == 0) {
+              divisibleBy++;
+            }
+          }
+        } while (divisibleBy > 2);
+
+        return number;
+      }
+
+      function genRandomOddNotPrime() {
+        let number;
+        let divisibleBy = 0;
+
+        do {
+          divisibleBy = 0;
+
+          number = Math.floor(Math.random() * 100);
+
+          for (let i = 1; i <= 100; i++) {
+            if (number % i == 0) {
+              if (number % 2 != 0) {
+                divisibleBy++;
+              }
+            }
+          }
+        } while (divisibleBy < 3);
+
+        return number;
+      }
+
+      function shuffle(array) {
+        const length = array.length;
+        const shuffled = [];
+
+        for (let i = 0; i < length; i++) {
+          const randomIndex = Math.floor(Math.random() * array.length);
+
+          const spliced = array.splice(randomIndex, 1)[0];
+          shuffled.push(spliced);
+        }
+
+        return shuffled;
+      }
+
+      const score = document.getElementById('score');
+
+      let buttons = [];
+      for (let i = 0; i < 5; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = genRandomPrime();
+
+        btn.onclick = function () {
+          btn.style.background = 'limegreen';
+          btn.disabled = true;
+          points++;
+          score.textContent = 'Punkty: ' + points;
+        };
+
+        buttons.push(btn);
+      }
+
+      for (let i = 0; i < 15; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = genRandomOddNotPrime();
+
+        btn.onclick = function () {
+          btn.style.background = 'pink';
+          btn.disabled = true;
+          points--;
+          score.textContent = 'Punkty: ' + points;
+        };
+        buttons.push(btn);
+      }
+
+      const shuffledButtons = shuffle(buttons);
+
+      const body = document.getElementById('body');
+
+      for (let i = 0; i < shuffledButtons.length; i++) {
+        body.appendChild(shuffledButtons[i]);
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      #kula {
+        border-radius: 100%;
+        border: 2px solid black;
+        margin-inline: auto;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="kula"></div>
+  </body>
+  <script>
+    let size = 100;
+
+    let intervalMaleje = null;
+    let intervalRosnie = null;
+    let stopIntervals = false;
+    let maxSize;
+
+    if (window.innerWidth > window.innerHeight) {
+      maxSize = window.innerHeight;
+    } else {
+      maxSize = window.innerWidth;
+    }
+
+    const kula = document.getElementById('kula');
+    kula.style.width = size + 'px';
+    kula.style.height = size + 'px';
+
+    kula.addEventListener('mousedown', kulaRosnie);
+    kula.addEventListener('mouseup', kulaMaleje);
+    kula.addEventListener('mouseout', function () {
+      stopIntervals = true;
+    });
+
+    function kulaRosnie() {
+      console.log('mousedown');
+      clearInterval(intervalMaleje);
+      intervalRosnie = setInterval(function () {
+        if (stopIntervals) {
+          clearInterval(intervalRosnie);
+          stopIntervals = false;
+        }
+
+        if (size > maxSize) {
+          clearInterval(intervalRosnie);
+          kula.textContent = 'MAX POWER';
+        }
+
+        console.log('interval', size);
+        size++;
+        kula.style.width = size + 'px';
+        kula.style.height = size + 'px';
+      }, 10);
+    }
+
+    function kulaMaleje() {
+      console.log('mouseup');
+      clearInterval(intervalRosnie);
+      intervalMaleje = setInterval(function () {
+        if (stopIntervals) {
+          clearInterval(intervalMaleje);
+          stopIntervals = false;
+        }
+
+        if (size < 100) {
+          clearInterval(intervalMaleje);
+        }
+
+        size--;
+        kula.style.width = size + 'px';
+        kula.style.height = size + 'px';
+      }, 10);
+    }
+  </script>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <input type="text" id="input" />
+    <button id="add" onclick="addTask()">Dodaj zadanie</button>
+    <button id="rem-all" onclick="removeAll()">Usuń wszystkie</button>
+    <ul id="list"></ul>
+    <script>
+      let tasks = [];
+      function addTask() {
+        const text = document.getElementById('input').value;
+        const task = document.createElement('li');
+        task.textContent = text;
+
+        const delBtn = document.createElement('btn');
+        delBtn.textContent = 'Usuń';
+        delBtn.style.paddingLeft = '10px';
+        delBtn.style.color = 'darkgray';
+
+        const tasksAmount = tasks.length;
+        delBtn.onclick = function () {
+          task.remove();
+          tasks[tasksAmount] = null;
+        };
+
+        task.appendChild(delBtn);
+        task.style.display = 'flex';
+
+        tasks.push(task);
+
+        renderList();
+      }
+
+      function renderList() {
+        const list = document.getElementById('list');
+        list.replaceChildren();
+
+        tasks.reverse();
+        tasks.forEach((task) => {
+          if (task) {
+            list.appendChild(task);
+          }
+        });
+        tasks.reverse();
+      }
+
+      function removeAll() {
+        tasks = [];
+        document.getElementById('list').replaceChildren();
+      }
+    </script>
+  </body>
+</html>
