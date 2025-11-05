@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <input type="text" id="input" />
+    <ul id="list"></ul>
+    <script>
+      const users = ['Anna', 'Bartek', 'Kasia', 'Marek', 'Andrzej', 'Ola'];
+
+      document.getElementById('input').addEventListener('input', renderList);
+
+      function renderList() {
+        const list = document.getElementById('list');
+        list.replaceChildren();
+
+        const input = document.getElementById('input').value;
+
+        if (input == '') {
+          users.forEach((user) => {
+            const li = document.createElement('li');
+            li.textContent = user;
+
+            list.appendChild(li);
+          });
+        } else {
+          users.forEach((user) => {
+            if (user.includes(input)) {
+              const li = document.createElement('li');
+              li.textContent = user;
+
+              list.appendChild(li);
+            }
+          });
+        }
+      }
+
+      renderList();
+    </script>
+  </body>
+</html>

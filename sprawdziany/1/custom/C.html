@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      #list {
+        display: flex;
+        flex-flow: column-reverse;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="controls">
+      <input type="text" id="text" />
+      <button id="add" onclick="addTask()">Dodaj</button>
+      <button id="remove-all" onclick="remAllTasks()">Usuń wszystkie</button>
+    </div>
+    <ul id="list"></ul>
+    <script>
+      function addTask() {
+        const text = document.getElementById('text').value;
+
+        if (!text) {
+          return;
+        }
+
+        const task = document.createElement('li');
+        task.textContent = text;
+
+        const button = document.createElement('button');
+        button.textContent = 'Usuń';
+        button.onclick = function () {
+          task.remove();
+        };
+
+        task.append(button);
+
+        document.getElementById('list').append(task);
+
+        document.getElementById('text').value = '';
+      }
+
+      function remAllTasks() {
+        document.getElementById('list').replaceChildren();
+      }
+    </script>
+  </body>
+</html>
