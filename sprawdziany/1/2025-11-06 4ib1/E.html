@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        function isPalindrome(text) {
+            const textArray = text.split('')
+
+            let textLowerArray = []
+            textArray.forEach((letter) => {
+                if (letter != ' ') {
+                    textLowerArray.push(letter.toLowerCase())
+                }
+            })
+
+            let lowerArray = [];
+            textLowerArray.forEach((letter) => {
+                lowerArray.push(letter);
+            })
+
+            const reversed = textLowerArray.reverse()
+
+            let palindrome = true;
+            lowerArray.forEach((letter, index) => {
+                if (letter != textLowerArray[index]) {
+                    palindrome = false
+                }
+            })
+
+
+            
+
+            return palindrome
+
+        }
+
+        console.log(isPalindrome('kajak'))
+        console.log(isPalindrome('Ala ma kota'))
+        console.log(isPalindrome('Kobyła ma mały bok'))
+    </script>
+</body>
+</html>

@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0
+        }
+        .box {
+            width: 100px;
+            height: 100px;
+            position: absolute;
+        }
+
+        #btn {
+            margin-top: 600px;
+        }
+
+    </style>
+</head>
+<body>
+    
+    <div id="board"></div>
+    <button id="btn" onclick="start()">Start</button>
+    <script>
+        
+        function randomRgb() {
+            const random = parseInt(Math.random() * 255);
+            return random
+        }
+        function start() {
+            let interval = null;
+        let interval2 = null;
+        let interval3 = null;
+        let interval4 = null;
+        let interval5 = null;
+            const board = document.getElementById('board')
+            board.replaceChildren()
+            clearInterval(interval)
+            clearInterval(interval2)
+            clearInterval(interval3)
+            clearInterval(interval4)
+            clearInterval(interval5)
+
+            interval = setTimeout(function() {
+                const box = document.createElement('div')
+                box.className = 'box'
+                box.style.background = `rgb(${randomRgb()}, ${randomRgb()}, ${randomRgb()})`
+                box.style.left = 0 + 'px'
+
+                board.appendChild(box)
+                setTimeout(function() {
+                const box = document.createElement('div')
+                box.className = 'box'
+                box.style.background = `rgb(${randomRgb()}, ${randomRgb()}, ${randomRgb()})`
+                box.style.left = 100 + 'px'
+
+                board.appendChild(box)
+                setTimeout(function() {
+                const box = document.createElement('div')
+                box.className = 'box'
+                box.style.background = `rgb(${randomRgb()}, ${randomRgb()}, ${randomRgb()})`
+                box.style.left = 200 + 'px'
+
+                board.appendChild(box)
+                setTimeout(function() {
+                const box = document.createElement('div')
+                box.className = 'box'
+                box.style.background = `rgb(${randomRgb()}, ${randomRgb()}, ${randomRgb()})`
+                box.style.left = 300 + 'px'
+
+                board.appendChild(box)
+                setTimeout(function() {
+                const box = document.createElement('div')
+                box.className = 'box'
+                box.style.background = `rgb(${randomRgb()}, ${randomRgb()}, ${randomRgb()})`
+                box.style.left = 400 + 'px'
+
+                board.appendChild(box)
+            }, 500)
+            }, 500)
+            
+            }, 500)
+            
+            }, 500)
+            
+            }, 500)
+
+
+            interval2 = setTimeout(function() {
+                const box = document.createElement('div')
+                box.className = 'box'
+                box.style.background = `rgb(${randomRgb()}, ${randomRgb()}, ${randomRgb()})`
+                box.style.left = '400px'
+                box.style.top = 0 + 'px'
+
+                board.appendChild(box)
+                setTimeout(function() {
+                const box = document.createElement('div')
+                box.className = 'box'
+                box.style.background = `rgb(${randomRgb()}, ${randomRgb()}, ${randomRgb()})`
+                box.style.left = '400px'
+                box.style.top = 100 + 'px'
+
+                board.appendChild(box)
+                setTimeout(function() {
+                const box = document.createElement('div')
+                box.className = 'box'
+                box.style.background = `rgb(${randomRgb()}, ${randomRgb()}, ${randomRgb()})`
+                box.style.left = '400px'
+                box.style.top = 200 + 'px'
+
+                board.appendChild(box)
+                setTimeout(function() {
+                const box = document.createElement('div')
+                box.className = 'box'
+                box.style.background = `rgb(${randomRgb()}, ${randomRgb()}, ${randomRgb()})`
+                box.style.left = '400px'
+                box.style.top = 300 + 'px'
+
+                board.appendChild(box)
+                setTimeout(function() {
+                const box = document.createElement('div')
+                box.className = 'box'
+                box.style.background = `rgb(${randomRgb()}, ${randomRgb()}, ${randomRgb()})`
+                box.style.left = '400px'
+                box.style.top = 400 + 'px'
+
+                board.appendChild(box)
+            }, 500)
+            }, 500)
+            
+            }, 500)
+            
+            }, 500)
+            
+            }, 2500)
+
+
+            interval3 = setTimeout(function() {
+                const box = document.createElement('div')
+                box.className = 'box'
+                box.style.background = `rgb(${randomRgb()}, ${randomRgb()}, ${randomRgb()})`
+                box.style.top = '400px'
+                box.style.left = 300 + 'px'
+
+                board.appendChild(box)
+                setTimeout(function() {
+                const box = document.createElement('div')
+                box.className = 'box'
+                box.style.background = `rgb(${randomRgb()}, ${randomRgb()}, ${randomRgb()})`
+                box.style.top = '400px'
+                box.style.left = 200 + 'px'
+
+                board.appendChild(box)
+                setTimeout(function() {
+                const box = document.createElement('div')
+                box.className = 'box'
+                box.style.background = `rgb(${randomRgb()}, ${randomRgb()}, ${randomRgb()})`
+                box.style.top = '400px'
+                box.style.left = 100 + 'px'
+
+                board.appendChild(box)
+                setTimeout(function() {
+                const box = document.createElement('div')
+                box.className = 'box'
+                box.style.background = `rgb(${randomRgb()}, ${randomRgb()}, ${randomRgb()})`
+                box.style.top = '400px'
+                box.style.left = 0 + 'px'
+
+                board.appendChild(box)
+            }, 500)
+            
+            }, 500)
+            
+            }, 500)
+            
+            }, 5000)
+
+            interval4 = setTimeout(function() {
+                const box = document.createElement('div')
+                box.className = 'box'
+                box.style.background = `rgb(${randomRgb()}, ${randomRgb()}, ${randomRgb()})`
+                box.style.left = '0px'
+                box.style.top = 300 + 'px'
+
+                board.appendChild(box)
+                setTimeout(function() {
+                const box = document.createElement('div')
+                box.className = 'box'
+                box.style.background = `rgb(${randomRgb()}, ${randomRgb()}, ${randomRgb()})`
+                box.style.left = '0px'
+                box.style.top = 200 + 'px'
+
+                board.appendChild(box)
+                setTimeout(function() {
+                const box = document.createElement('div')
+                box.className = 'box'
+                box.style.background = `rgb(${randomRgb()}, ${randomRgb()}, ${randomRgb()})`
+                box.style.left = '0px'
+                box.style.top = 100 + 'px'
+
+                board.appendChild(box)
+            
+            }, 500)
+            
+            }, 500)
+            
+            }, 7000)
+
+            interval5 = setTimeout(function() {
+                const box = document.createElement('div')
+                box.className = 'box'
+                box.style.background = `rgb(${randomRgb()}, ${randomRgb()}, ${randomRgb()})`
+                box.style.top = '100px'
+                box.style.left = 100 + 'px'
+
+                board.appendChild(box)
+                setTimeout(function() {
+                const box = document.createElement('div')
+                box.className = 'box'
+                box.style.background = `rgb(${randomRgb()}, ${randomRgb()}, ${randomRgb()})`
+                box.style.top = '100px'
+                box.style.left = 200 + 'px'
+
+                board.appendChild(box)
+                setTimeout(function() {
+                const box = document.createElement('div')
+                box.className = 'box'
+                box.style.background = `rgb(${randomRgb()}, ${randomRgb()}, ${randomRgb()})`
+                box.style.top = '100px'
+                box.style.left = 300 + 'px'
+
+                board.appendChild(box)
+            
+            }, 500)
+            
+            }, 500)
+            
+            }, 8500)
+
+
+            setTimeout(function() {
+                const box = document.createElement('div')
+                box.className = 'box'
+                box.style.background = `rgb(${randomRgb()}, ${randomRgb()}, ${randomRgb()})`
+                box.style.left = '300px'
+                box.style.top = 200 + 'px'
+
+                board.appendChild(box)
+                setTimeout(function() {
+                const box = document.createElement('div')
+                box.className = 'box'
+                box.style.background = `rgb(${randomRgb()}, ${randomRgb()}, ${randomRgb()})`
+                box.style.left = '300px'
+                box.style.top = 300 + 'px'
+
+                board.appendChild(box)
+            
+            }, 500)
+            
+            }, 10100)
+            
+            setTimeout(function() {
+                const box = document.createElement('div')
+                box.className = 'box'
+                box.style.background = `rgb(${randomRgb()}, ${randomRgb()}, ${randomRgb()})`
+                box.style.left = '200px'
+                box.style.top = '300px'
+
+                board.appendChild(box)
+                setTimeout(function() {
+                const box = document.createElement('div')
+                box.className = 'box'
+                box.style.background = `rgb(${randomRgb()}, ${randomRgb()}, ${randomRgb()})`
+                box.style.left = '100px'
+                box.style.top = '300px'
+
+                board.appendChild(box)
+            
+            }, 500)
+            
+            }, 11100)
+
+            setTimeout(function() {
+                const box = document.createElement('div')
+                box.className = 'box'
+                box.style.background = `rgb(${randomRgb()}, ${randomRgb()}, ${randomRgb()})`
+                box.style.left = '100px'
+                box.style.top = '200px'
+
+                board.appendChild(box)
+                setTimeout(function() {
+                const box = document.createElement('div')
+                box.className = 'box'
+                box.style.background = `rgb(${randomRgb()}, ${randomRgb()}, ${randomRgb()})`
+                box.style.left = '200px'
+                box.style.top = '200px'
+
+                board.appendChild(box)
+            
+            }, 500)
+            
+            }, 12100)
+
+        }
+    </script>
+</body>
+</html>

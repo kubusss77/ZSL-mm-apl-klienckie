@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+    </style>
+</head>
+<body>
+    <textarea id="text" rows="4" cols="50"></textarea>
+    <button onclick="analyze()">Analizuj</button>
+    <script>
+        function analyze() {
+            const text = document.getElementById('text').value
+            const array = text.split('')
+            const numbers = []
+            array.forEach((char) => {
+                if(char != ' ') {
+                const num = isNaN(char)
+                if (!num) {
+                    numbers.push(char)
+                }
+            }
+            });
+
+            let amount0 = 0
+            let amount1 = 0
+            let amount2 = 0
+            let amount3 = 0
+            let amount4 = 0
+            let amount5 = 0
+            let amount6 = 0
+            let amount7 = 0
+            let amount8 = 0
+            let amount9 = 0
+
+            for(let i = 0; i < numbers.length; i++) {
+                switch (numbers[i]) {
+                    case '0': {
+                        amount0++
+                        break
+                    }
+                    case '1': {
+                        amount1++
+                        break
+                    }
+                    case '2': {
+                        amount2++
+                        break
+                    }
+                    case '3': {
+                        amount3++
+                        break
+                    }
+                    case '4': {
+                        amount4++
+                        break
+                    }
+                    case '5': {
+                        amount5++
+                        break
+                    }
+                    case '6': {
+                        amount6++
+                        break
+                    }
+                    case '7': {
+                        amount7++
+                        break
+                    }
+                    case '8': {
+                        amount8++
+                        break
+                    }
+                    case '9': {
+                        amount9++
+                        break
+                    }
+                }
+            }
+
+            console.log('0:', amount0)
+            console.log('1:', amount1)
+            console.log('2:', amount2)
+            console.log('3:', amount3)
+            console.log('4:', amount4)
+            console.log('5:', amount5)
+            console.log('6:', amount6)
+            console.log('7:', amount7)
+            console.log('8:', amount8)
+            console.log('9:', amount9)
+        }
+    </script>
+</body>
+</html>

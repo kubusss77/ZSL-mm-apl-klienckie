@@ -1,0 +1,10 @@
+[NIE] [1p] A. Hanoi
+[TAK] [1.5p] B. Spirala
+[NIE] [1.5p] C. Sortowanie
+D. Skaner liczb
+	[TAK][1p] - zlicza, ile razy pojawia się każda z nich
+	[NIE] [1p] - tworzy poziome słupki
+[TAK] [1.5p] E. Palindrom Checker
+F. Kulka
+	[NIE][0.5p] - po kliknięciu kulki — zatrzymuje się, kolejne kliknięcie ponownie wprawia ją w ruch.
+	[NIE] [1p] - reszta zadania
