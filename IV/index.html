@@ -51,9 +51,9 @@
       }
 
       #end {
-        width: 180px;
+        width: 200px;
         height: 50px;
-        top: 175px;
+        top: 165px;
         left: 100px;
         background: rgb(100, 100, 100, 0.9);
         position: absolute;
@@ -68,7 +68,10 @@
       let secondCard = false;
       let score = false;
       let timeMs;
+      let endDate;
+      let userTime;
       let timerInterval = null;
+      let scoreSaved = false;
 
       function startGame(time) {
         timeMs = time * 1000;
@@ -99,6 +102,8 @@
           }
           cardsArray.push(columnArray);
         }
+
+        genScoresTable();
       }
 
       function shuffle(array) {
@@ -123,7 +128,7 @@
 
           const progress = document.getElementById('progress');
           const timer = document.getElementById('timer');
-          const endDate = Date.now() + timeMs;
+          endDate = Date.now() + timeMs;
           timerInterval = setInterval(function () {
             const timeLeft = new Date(endDate - Date.now());
             timer.textContent = timeLeft.getMinutes() + ':' + timeLeft.getSeconds() + ':' + timeLeft.getMilliseconds();
@@ -162,8 +167,11 @@
 
                 score++;
 
-                if (score > 7) {
+                if (score > -1) {
                   endGame();
+                  userTime = timeMs - (endDate - Date.now());
+                  console.log(userTime)
+                  document.getElementById('save-score').style.display = 'block';
                 }
 
                 // Incorrect guess
@@ -216,7 +224,94 @@
         firstCard = false;
         secondCard = false;
         score = false;
+        scoreSaved = false;
       }
+
+      function saveScore() {
+        if(scoreSaved) return;
+        scoreSaved = true;
+        const nick = document.getElementById('save-score-nick').value
+        const scoresCookie = document.cookie.split(';').find(scoreTable => scoreTable.includes('scoresTable' + timeMs / 1000));
+        let scoresTable = [];
+        if (!scoresCookie) {
+          console.log('new scores table')
+          scoresTable.push({
+            nick,
+            userTime,
+          })
+
+          const scoresEncoded = encodeURIComponent(JSON.stringify(scoresTable))
+          document.cookie = "scoresTable" + timeMs / 1000 + '=' + scoresEncoded;
+        } else {
+          console.log('scores table present')
+          const scoresDecoded = JSON.parse(decodeURIComponent(scoresCookie.split('=')[1]))
+          scoresTable = scoresDecoded;
+
+          scoresTable.sort(function(a, b) {
+            if (a.userTime > b.userTime) return -1
+          })
+          
+
+          scoresTable.push({
+            nick,
+            userTime,
+          })
+
+          const scoresEncoded = encodeURIComponent(JSON.stringify(scoresTable))
+          document.cookie = "scoresTable" + timeMs / 1000 + '=' + scoresEncoded;
+        }
+
+        console.table(scoresTable);
+      }
+
+      function genScoresTable() {
+        const scoresTable = document.getElementById('scoresTable')
+
+        const scoresCookie = document.cookie.split(';').find(scoreTable => scoreTable.includes('scoresTable' + timeMs / 1000));
+        if (!scoresCookie) {
+          scoresTable.textContent = 'Tablica wyników jest pusta.'
+          return;
+        }
+
+        scoresTable.replaceChildren()
+        
+        const thPosition = document.createElement('th')
+        thPosition.textContent = 'Miejsce'
+
+        const thNick = document.createElement('th')
+        thNick.textContent = 'Nick gracza'
+
+        const thTime = document.createElement('th')
+        thTime.textContent = 'Czas'
+
+        const trHeader = document.createElement('tr')
+        trHeader.appendChild(thPosition)
+        trHeader.appendChild(thNick)
+        trHeader.appendChild(thTime)
+        scoresTable.appendChild(trHeader)
+
+        const scoresDecoded = JSON.parse(decodeURIComponent(scoresCookie.split('=')[1]))
+
+        scoresDecoded.forEach((score, index) => {
+          const tdPosition = document.createElement('td')
+          tdPosition.textContent = index + 1
+
+          const tdNick = document.createElement('td')
+          tdNick.textContent = score.nick
+
+          const userTime = new Date(score.userTime)
+          const tdTime = document.createElement('td')
+          tdTime.textContent = userTime.getSeconds() + ':' + userTime.getMilliseconds()
+
+          const tr = document.createElement('tr')
+          tr.appendChild(tdPosition)
+          tr.appendChild(tdNick)
+          tr.appendChild(tdTime)
+
+          scoresTable.appendChild(tr)
+        })
+      }
+
     </script>
   </head>
   <body>
@@ -238,9 +333,13 @@
       <div id="end" style="display: none">
         <p>Koniec gry!</p>
         <p id="wynik"></p>
-        <input type="text" value="Twój nick" />
         <button onclick="resetGame()">Reset gry</button>
       </div>
+      <div id="save-score" style="display: none;">
+        <input type="text" value="Twój nick" id="save-score-nick">
+        <button onclick="saveScore()">Zapisz</button>
+      </div>
+      <table id="scoresTable"></table>
     </div>
   </body>
 </html>
