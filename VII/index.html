@@ -5,84 +5,182 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <style>
-      td {
-        width: 20px;
-        height: 20px;
-        border: 1px dotted lightblue;
+      body {
+        background: #222;
       }
 
-      table {
+      #board {
+        display: grid;
         border: 5px dashed lightblue;
       }
 
+      .box {
+        display: grid;
+
+        width: 20px;
+        aspect-ratio: 1;
+        border: 1px dotted lightblue;
+      }
+
       .snake-body {
-        background: orange;
+        position: relative;
         width: 100%;
-        height: 100%;
+        aspect-ratio: 1;
+        grid-area: 1 / 1;
+        z-index: 10;
+
+        background: orange;
+      }
+
+      .snake-food {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 1;
+        grid-area: 1 / 1;
+        z-index: 1;
+
+        background: yellowgreen;
+        border-radius: 100%;
+      }
+
+      .row {
+        display: flex;
+      }
+
+      .flex {
+        display: flex;
       }
     </style>
   </head>
   <body onkeydown="keyDown(event)">
-    <table id="board"></table>
-  </body>
-  <script>
-    const BOARD_SIZE = 20;
-    const board = document.getElementById("board");
+    <section id="settings">
+      <div class="row">
+        <p>Rozmiar planszy:</p>
+        <input type="range" />
+      </div>
+    </section>
+    <div class="flex">
+      <div id="board"></div>
+    </div>
 
-    for (let i = 0; i < BOARD_SIZE; i++) {
-      const tr = document.createElement("tr");
-      for (let j = 0; j < BOARD_SIZE; j++) {
-        const td = document.createElement("td");
-        td.setAttribute("id", "pos-" + i + "-" + j);
-        tr.appendChild(td);
+    <script>
+      const BOARD_SIZE = 20;
+      const board = document.getElementById('board');
+
+      const gridTemplate = `repeat(${BOARD_SIZE}, 1fr)`;
+      board.style.gridTemplateRows = gridTemplate;
+      board.style.gridTemplateColumns = gridTemplate;
+
+      let boxesMetadata = [];
+
+      for (let y = 0; y < BOARD_SIZE; y++) {
+        const boxesMetadataRow = [];
+
+        for (let x = 0; x < BOARD_SIZE; x++) {
+          const box = document.createElement('div');
+          box.className = 'box';
+          box.setAttribute('id', 'pos-' + x + '-' + y);
+          board.appendChild(box);
+          boxesMetadataRow.push({ food: false });
+        }
+
+        boxesMetadata.push(boxesMetadataRow);
       }
-      board.appendChild(tr);
-    }
 
-    const snakeBody = [
-      {
-        x: BOARD_SIZE / 2,
-        y: BOARD_SIZE / 2,
-      },
-    ];
+      console.table(boxesMetadata);
 
-    let direction = 2;
+      const snakeBody = [
+        {
+          x: BOARD_SIZE / 2,
+          y: BOARD_SIZE / 2,
+        },
+      ];
 
-    function keyDown(event) {
-      const newDirection = event.keyCode - 37;
-      if ((direction - newDirection) % 2 == 0) return;
-      direction = newDirection;
-    }
+      let direction = 2;
+      let gameStarted = false;
+      let snakeMoving;
+      let foodSpawning;
 
-    function moveSnake() {
-      const snakeButt = snakeBody[0];
-      const snakeHead = snakeBody[snakeBody.length - 1];
+      function keyDown(event) {
+        if (!gameStarted) {
+          gameStarted = true;
+          snakeMoving = setInterval(moveSnake, 200);
+          foodSpawning = setInterval(newSnakeFood, 30);
+        }
 
-      const newHead = {
-        x: direction % 2 == 0 ? snakeHead.x + (direction - 1) : snakeHead.x,
-        y: direction % 2 == 1 ? snakeHead.y - (direction - 2) : snakeHead.y,
-      };
+        const newDirection = event.keyCode - 37;
+        if (newDirection > 3 || newDirection < 0) return;
 
-      snakeBody.shift();
-      snakeBody.push(newHead);
+        if ((direction - newDirection) % 2 == 0) return;
+        direction = newDirection;
+        console.log('newDirection', direction);
+      }
 
-      console.log(newHead);
-      console.table(snakeBody);
+      function moveSnake() {
+        const snakeHead = snakeBody[snakeBody.length - 1];
 
-      const tdHead = document.getElementById(
-        "pos-" + newHead.x + "-" + newHead.y
-      );
+        const newHead = {
+          x: direction % 2 == 0 ? snakeHead.x + (direction - 1) : snakeHead.x,
+          y: direction % 2 == 1 ? snakeHead.y + (direction - 2) : snakeHead.y,
+        };
+        console.log(newHead);
 
-      const img = document.createElement("div");
-      img.className = "snake-body";
-      tdHead.appendChild(img);
+        let boxMetadata;
+        try {
+          boxMetadata = boxesMetadata[newHead.y][newHead.x];
+        } catch (err) {
+          endGame();
+          return;
+        }
 
-      const tdButt = document.getElementById(
-        "pos-" + snakeButt.x + "-" + snakeButt.y
-      );
-      tdButt.replaceChildren();
-    }
+        if (boxMetadata === undefined || boxMetadata.snake == true) {
+          endGame();
+          return;
+        }
 
-    setInterval(moveSnake, 500);
-  </script>
+        boxesMetadata[newHead.y][newHead.x].snake = true;
+
+        const tdHead = document.getElementById('pos-' + newHead.x + '-' + newHead.y);
+
+        if (boxMetadata.food) {
+          tdHead.replaceChildren();
+        } else {
+          const snakeButt = snakeBody[0];
+
+          const tdButt = document.getElementById('pos-' + snakeButt.x + '-' + snakeButt.y);
+          tdButt.replaceChildren();
+
+          boxesMetadata[snakeButt.y][snakeButt.x].snake = false;
+
+          snakeBody.shift();
+        }
+
+        snakeBody.push(newHead);
+
+        const img = document.createElement('div');
+        img.className = 'snake-body';
+        tdHead.appendChild(img);
+      }
+
+      function newSnakeFood() {
+        const randomX = Math.floor(Math.random() * BOARD_SIZE);
+        const randomY = Math.floor(Math.random() * BOARD_SIZE);
+
+        if (boxesMetadata[randomY][randomX].food) return;
+
+        const foodImg = document.createElement('div');
+        foodImg.className = 'snake-food';
+
+        const tdRandom = document.getElementById('pos-' + randomX + '-' + randomY);
+        tdRandom.appendChild(foodImg);
+
+        boxesMetadata[randomY][randomX].food = true;
+      }
+
+      function endGame() {
+        clearInterval(snakeMoving);
+        clearInterval(foodSpawning);
+      }
+    </script>
+  </body>
 </html>
