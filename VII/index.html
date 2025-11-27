@@ -7,6 +7,22 @@
     <style>
       body {
         background: #222;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      #settings p,
+      #btn-render {
+        margin-inline: 20px;
+      }
+
+      p {
+        color: white;
+      }
+
+      #btn-render {
+        height: 30px;
       }
 
       #board {
@@ -45,10 +61,24 @@
 
       .row {
         display: flex;
+        align-items: center;
       }
 
       .flex {
         display: flex;
+      }
+
+      #end {
+        position: absolute;
+        top: 100px;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+
+        display: none;
+      }
+      #end p {
+        margin: 5px;
       }
     </style>
   </head>
@@ -56,56 +86,93 @@
     <section id="settings">
       <div class="row">
         <p>Rozmiar planszy:</p>
-        <input type="range" />
+        <input
+          type="range"
+          id="size-input"
+          oninput="sizeChange()"
+          min="10"
+          max="100"
+          value="20"
+        />
+        <p id="size-label"></p>
+        <button onclick="render()" id="btn-render">Generuj</button>
       </div>
     </section>
     <div class="flex">
       <div id="board"></div>
     </div>
+    <div id="end">
+      <p><b>Koniec gry!</b></p>
+      <p id="end-score"></p>
+      <button onclick="reset()">Reset</button>
+    </div>
 
     <script>
-      const BOARD_SIZE = 20;
-      const board = document.getElementById('board');
-
-      const gridTemplate = `repeat(${BOARD_SIZE}, 1fr)`;
-      board.style.gridTemplateRows = gridTemplate;
-      board.style.gridTemplateColumns = gridTemplate;
+      const SNAKE_FOOD_INTERVAL = 2000;
+      const SNAKE_MOVE_INTERVAL = 200;
+      const board = document.getElementById("board");
 
       let boxesMetadata = [];
-
-      for (let y = 0; y < BOARD_SIZE; y++) {
-        const boxesMetadataRow = [];
-
-        for (let x = 0; x < BOARD_SIZE; x++) {
-          const box = document.createElement('div');
-          box.className = 'box';
-          box.setAttribute('id', 'pos-' + x + '-' + y);
-          board.appendChild(box);
-          boxesMetadataRow.push({ food: false });
-        }
-
-        boxesMetadata.push(boxesMetadataRow);
-      }
-
-      console.table(boxesMetadata);
-
-      const snakeBody = [
-        {
-          x: BOARD_SIZE / 2,
-          y: BOARD_SIZE / 2,
-        },
-      ];
-
-      let direction = 2;
-      let gameStarted = false;
+      let snakeBody = [];
+      let boardSize;
+      let direction;
+      let gameStarted;
       let snakeMoving;
       let foodSpawning;
+
+      sizeChange();
+
+      function sizeChange() {
+        const range = document.getElementById("size-input");
+        const size = range.value;
+
+        document.getElementById("size-label").textContent = size;
+
+        boardSize = size;
+      }
+
+      render();
+
+      function render() {
+        boxesMetadata = [];
+        snakeBody = [];
+        gameStarted = false;
+
+        clearInterval(snakeMoving);
+        clearInterval(foodSpawning);
+
+        const gridTemplate = `repeat(${boardSize}, 1fr)`;
+        board.style.gridTemplateRows = gridTemplate;
+        board.style.gridTemplateColumns = gridTemplate;
+        board.replaceChildren();
+
+        for (let y = 0; y < boardSize; y++) {
+          const boxesMetadataRow = [];
+
+          for (let x = 0; x < boardSize; x++) {
+            const box = document.createElement("div");
+            box.className = "box";
+            box.setAttribute("id", "pos-" + x + "-" + y);
+            board.appendChild(box);
+            boxesMetadataRow.push({ food: false });
+          }
+
+          boxesMetadata.push(boxesMetadataRow);
+        }
+
+        snakeBody.push({
+          x: boardSize / 2,
+          y: boardSize / 2,
+        });
+      }
 
       function keyDown(event) {
         if (!gameStarted) {
           gameStarted = true;
-          snakeMoving = setInterval(moveSnake, 200);
-          foodSpawning = setInterval(newSnakeFood, 30);
+          snakeMoving = setInterval(moveSnake, SNAKE_MOVE_INTERVAL);
+          //foodSpawning = setInterval(newSnakeFood, SNAKE_FOOD_INTERVAL);
+
+          newSnakeFood();
         }
 
         const newDirection = event.keyCode - 37;
@@ -113,7 +180,7 @@
 
         if ((direction - newDirection) % 2 == 0) return;
         direction = newDirection;
-        console.log('newDirection', direction);
+        console.log("newDirection", direction);
       }
 
       function moveSnake() {
@@ -129,25 +196,23 @@
         try {
           boxMetadata = boxesMetadata[newHead.y][newHead.x];
         } catch (err) {
-          endGame();
+          endGame("1");
           return;
         }
 
-        if (boxMetadata === undefined || boxMetadata.snake == true) {
-          endGame();
-          return;
-        }
+        const tdHead = document.getElementById(
+          "pos-" + newHead.x + "-" + newHead.y
+        );
 
-        boxesMetadata[newHead.y][newHead.x].snake = true;
-
-        const tdHead = document.getElementById('pos-' + newHead.x + '-' + newHead.y);
-
-        if (boxMetadata.food) {
+        if (boxMetadata?.food) {
           tdHead.replaceChildren();
+          newSnakeFood();
         } else {
           const snakeButt = snakeBody[0];
 
-          const tdButt = document.getElementById('pos-' + snakeButt.x + '-' + snakeButt.y);
+          const tdButt = document.getElementById(
+            "pos-" + snakeButt.x + "-" + snakeButt.y
+          );
           tdButt.replaceChildren();
 
           boxesMetadata[snakeButt.y][snakeButt.x].snake = false;
@@ -155,31 +220,59 @@
           snakeBody.shift();
         }
 
+        if (boxMetadata === undefined || boxMetadata.snake == true) {
+          endGame("2");
+          return;
+        }
+
+        boxesMetadata[newHead.y][newHead.x].snake = true;
+
         snakeBody.push(newHead);
 
-        const img = document.createElement('div');
-        img.className = 'snake-body';
+        const img = document.createElement("div");
+        img.className = "snake-body";
         tdHead.appendChild(img);
       }
 
       function newSnakeFood() {
-        const randomX = Math.floor(Math.random() * BOARD_SIZE);
-        const randomY = Math.floor(Math.random() * BOARD_SIZE);
+        const randomX = Math.floor(Math.random() * boardSize);
+        const randomY = Math.floor(Math.random() * boardSize);
 
-        if (boxesMetadata[randomY][randomX].food) return;
+        if (
+          boxesMetadata[randomY][randomX].food ||
+          boxesMetadata[randomY][randomX].snake
+        ) {
+          newSnakeFood();
+          return;
+        }
 
-        const foodImg = document.createElement('div');
-        foodImg.className = 'snake-food';
+        const foodImg = document.createElement("div");
+        foodImg.className = "snake-food";
 
-        const tdRandom = document.getElementById('pos-' + randomX + '-' + randomY);
+        const tdRandom = document.getElementById(
+          "pos-" + randomX + "-" + randomY
+        );
         tdRandom.appendChild(foodImg);
 
         boxesMetadata[randomY][randomX].food = true;
       }
 
-      function endGame() {
+      function endGame(type) {
         clearInterval(snakeMoving);
         clearInterval(foodSpawning);
+
+        document.getElementById("end").style.display = "flex";
+        document.getElementById("board").style.opacity = "0.3";
+
+        const scoreDiv = document.getElementById("end-score");
+        scoreDiv.textContent = "Wynik: " + snakeBody.length;
+      }
+
+      function reset() {
+        document.getElementById("end").style.display = "none";
+        document.getElementById("board").style.opacity = "1";
+
+        render();
       }
     </script>
   </body>
