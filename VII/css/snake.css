@@ -1,0 +1,15 @@
+.snake {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  grid-area: 1 / 1;
+  z-index: 10;
+  width: 64px;
+  height: 64px;
+}
+
+.snake-head-right {
+  background-image: url(../txt.png);
+
+  background-position: 128px 128px;
+}

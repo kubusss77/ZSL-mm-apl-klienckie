@@ -1,0 +1,65 @@
+body {
+  background: #222;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#settings p,
+#btn-render {
+  margin-inline: 20px;
+}
+
+p {
+  color: white;
+}
+
+#btn-render {
+  height: 30px;
+}
+
+#board {
+  display: grid;
+  border: 5px dashed lightblue;
+}
+
+.box {
+  display: grid;
+
+  width: 20px;
+  aspect-ratio: 1;
+  border: 1px dotted lightblue;
+}
+
+.snake-food {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  grid-area: 1 / 1;
+  z-index: 1;
+
+  background: yellowgreen;
+  border-radius: 100%;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+}
+
+.flex {
+  display: flex;
+}
+
+#end {
+  position: absolute;
+  top: 100px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+
+  display: none;
+}
+#end p {
+  margin: 5px;
+}

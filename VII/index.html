@@ -4,83 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-    <style>
-      body {
-        background: #222;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-
-      #settings p,
-      #btn-render {
-        margin-inline: 20px;
-      }
-
-      p {
-        color: white;
-      }
-
-      #btn-render {
-        height: 30px;
-      }
-
-      #board {
-        display: grid;
-        border: 5px dashed lightblue;
-      }
-
-      .box {
-        display: grid;
-
-        width: 20px;
-        aspect-ratio: 1;
-        border: 1px dotted lightblue;
-      }
-
-      .snake-body {
-        position: relative;
-        width: 100%;
-        aspect-ratio: 1;
-        grid-area: 1 / 1;
-        z-index: 10;
-
-        background: orange;
-      }
-
-      .snake-food {
-        position: relative;
-        width: 100%;
-        aspect-ratio: 1;
-        grid-area: 1 / 1;
-        z-index: 1;
-
-        background: yellowgreen;
-        border-radius: 100%;
-      }
-
-      .row {
-        display: flex;
-        align-items: center;
-      }
-
-      .flex {
-        display: flex;
-      }
-
-      #end {
-        position: absolute;
-        top: 100px;
-        display: flex;
-        align-items: center;
-        flex-direction: column;
-
-        display: none;
-      }
-      #end p {
-        margin: 5px;
-      }
-    </style>
+    <link rel="stylesheet" href="./css/main.css" />
+    <link rel="stylesheet" href="./css/snake.css" />
   </head>
   <body onkeydown="keyDown(event)">
     <section id="settings">
@@ -106,9 +31,9 @@
       <p id="end-score"></p>
       <button onclick="reset()">Reset</button>
     </div>
+    <div class="snake-head-right snake">dd</div>
 
     <script>
-      const SNAKE_FOOD_INTERVAL = 2000;
       const SNAKE_MOVE_INTERVAL = 200;
       const board = document.getElementById("board");
 
@@ -116,6 +41,7 @@
       let snakeBody = [];
       let boardSize;
       let direction;
+      let directionChange;
       let gameStarted;
       let snakeMoving;
       let foodSpawning;
@@ -170,26 +96,59 @@
         if (!gameStarted) {
           gameStarted = true;
           snakeMoving = setInterval(moveSnake, SNAKE_MOVE_INTERVAL);
-          //foodSpawning = setInterval(newSnakeFood, SNAKE_FOOD_INTERVAL);
 
           newSnakeFood();
         }
 
-        const newDirection = event.keyCode - 37;
-        if (newDirection > 3 || newDirection < 0) return;
+        switch (event.key) {
+          case "ArrowRight": {
+            if (!direction && directionChange == -1) break;
 
-        if ((direction - newDirection) % 2 == 0) return;
-        direction = newDirection;
-        console.log("newDirection", direction);
+            direction = false;
+            directionChange = 1;
+            break;
+          }
+          case "ArrowDown": {
+            if (direction && directionChange == -1) break;
+
+            direction = true;
+            directionChange = 1;
+            break;
+          }
+          case "ArrowLeft": {
+            if (!direction && directionChange == 1) break;
+
+            direction = false;
+            directionChange = -1;
+            break;
+          }
+          case "ArrowUp": {
+            if (direction && directionChange == 1) break;
+
+            direction = true;
+            directionChange = -1;
+            break;
+          }
+        }
       }
 
       function moveSnake() {
         const snakeHead = snakeBody[snakeBody.length - 1];
 
-        const newHead = {
-          x: direction % 2 == 0 ? snakeHead.x + (direction - 1) : snakeHead.x,
-          y: direction % 2 == 1 ? snakeHead.y + (direction - 2) : snakeHead.y,
-        };
+        let newHead;
+
+        if (direction) {
+          newHead = {
+            x: snakeHead.x,
+            y: snakeHead.y + directionChange,
+          };
+        } else {
+          newHead = {
+            x: snakeHead.x + directionChange,
+            y: snakeHead.y,
+          };
+        }
+
         console.log(newHead);
 
         let boxMetadata;
@@ -205,6 +164,7 @@
         );
 
         if (boxMetadata?.food) {
+          boxesMetadata[newHead.y][newHead.x].food = false;
           tdHead.replaceChildren();
           newSnakeFood();
         } else {
@@ -229,8 +189,9 @@
 
         snakeBody.push(newHead);
 
-        const img = document.createElement("div");
-        img.className = "snake-body";
+        const img = document.createElement("img");
+        img.src = "txt.png";
+        img.className = "snake snake-head-right";
         tdHead.appendChild(img);
       }
 
@@ -238,10 +199,7 @@
         const randomX = Math.floor(Math.random() * boardSize);
         const randomY = Math.floor(Math.random() * boardSize);
 
-        if (
-          boxesMetadata[randomY][randomX].food ||
-          boxesMetadata[randomY][randomX].snake
-        ) {
+        if (boxesMetadata[randomY][randomX].snake) {
           newSnakeFood();
           return;
         }
