@@ -8,8 +8,46 @@
   height: 64px;
 }
 
-.snake-head-right {
-  background-image: url(../txt.png);
+.tile {
+  background-image: url(../texturePack.png);
+  background-repeat: no-repeat;
+  background-size: 160px 128px; /* Połowa oryginalnej wielkos\ści*/
+  width: 32px;
+  height: 32px;
+}
 
-  background-position: 128px 128px;
+/* Head */
+
+.snake-head-up {
+  background-position: -96px 0px;
+}
+
+.snake-head-right {
+  background-position: -128px 0px;
+}
+
+.snake-head-left {
+  background-position: -96px -32px;
+}
+
+.snake-head-down {
+  background-position: -128px -32px;
+}
+
+/* Edge */
+
+.snake-edge-left-down {
+  background-position: 0px 0px;
+}
+
+.snake-edge-right-down {
+  background-position: 0px -64px;
+}
+
+.snake-edge-left-up {
+  background-position: 0px -64px;
+}
+
+.snake-edge-right-up {
+  background-position: -64px -64px;
 }

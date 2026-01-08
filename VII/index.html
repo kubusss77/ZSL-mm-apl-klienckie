@@ -41,6 +41,7 @@
       let snakeBody = [];
       let boardSize;
       let direction;
+      let directionHasChanged;
       let directionChange;
       let gameStarted;
       let snakeMoving;
@@ -101,32 +102,56 @@
         }
 
         switch (event.key) {
+          // direction (boolean):
+          //   true - snake moves verticaly
+          //   false - snake moves horizontaly
+
+          // directionChange (number):
+          //   -1 - snake moves up or left
+          //   1 - snake moves down or right
+
           case "ArrowRight": {
-            if (!direction && directionChange == -1) break;
+            if (!direction && directionChange == -1) {
+              directionHasChanged = false;
+              break;
+            }
 
             direction = false;
             directionChange = 1;
+            directionHasChanged = true;
             break;
           }
           case "ArrowDown": {
-            if (direction && directionChange == -1) break;
+            if (direction && directionChange == -1) {
+              directionHasChanged = false;
+              break;
+            }
 
             direction = true;
             directionChange = 1;
+            directionHasChanged = true;
             break;
           }
           case "ArrowLeft": {
-            if (!direction && directionChange == 1) break;
+            if (!direction && directionChange == 1) {
+              directionHasChanged = false;
+              break;
+            }
 
             direction = false;
             directionChange = -1;
+            directionHasChanged = true;
             break;
           }
           case "ArrowUp": {
-            if (direction && directionChange == 1) break;
+            if (direction && directionChange == 1) {
+              directionHasChanged = false;
+              break;
+            }
 
             direction = true;
             directionChange = -1;
+            directionHasChanged = true;
             break;
           }
         }
@@ -136,17 +161,24 @@
         const snakeHead = snakeBody[snakeBody.length - 1];
 
         let newHead;
+        let snakeTurn;
 
         if (direction) {
+          // moving verticaly
           newHead = {
             x: snakeHead.x,
             y: snakeHead.y + directionChange,
           };
+
+          snakeTurn = directionChange < 0 ? "up" : "down";
         } else {
+          // moving horizontaly
           newHead = {
             x: snakeHead.x + directionChange,
             y: snakeHead.y,
           };
+
+          snakeTurn = directionChange < 0 ? "left" : "right";
         }
 
         console.log(newHead);
@@ -189,10 +221,9 @@
 
         snakeBody.push(newHead);
 
-        const img = document.createElement("img");
-        img.src = "txt.png";
-        img.className = "snake snake-head-right";
-        tdHead.appendChild(img);
+        const headTextureDiv = document.createElement("div");
+        headTextureDiv.className = "tile snake-head-" + snakeTurn;
+        tdHead.appendChild(headTextureDiv);
       }
 
       function newSnakeFood() {

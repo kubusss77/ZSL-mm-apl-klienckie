@@ -26,7 +26,7 @@ p {
 .box {
   display: grid;
 
-  width: 20px;
+  width: 32px;
   aspect-ratio: 1;
   border: 1px dotted lightblue;
 }
