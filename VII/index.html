@@ -11,14 +11,7 @@
     <section id="settings">
       <div class="row">
         <p>Rozmiar planszy:</p>
-        <input
-          type="range"
-          id="size-input"
-          oninput="sizeChange()"
-          min="10"
-          max="100"
-          value="20"
-        />
+        <input type="range" id="size-input" oninput="sizeChange()" min="10" max="100" value="20" />
         <p id="size-label"></p>
         <button onclick="render()" id="btn-render">Generuj</button>
       </div>
@@ -35,14 +28,16 @@
 
     <script>
       const SNAKE_MOVE_INTERVAL = 200;
-      const board = document.getElementById("board");
+      const board = document.getElementById('board');
 
       let boxesMetadata = [];
       let snakeBody = [];
       let boardSize;
       let direction;
       let directionHasChanged;
+      let oldDirectionChange;
       let directionChange;
+      let tailDirection;
       let gameStarted;
       let snakeMoving;
       let foodSpawning;
@@ -50,10 +45,10 @@
       sizeChange();
 
       function sizeChange() {
-        const range = document.getElementById("size-input");
+        const range = document.getElementById('size-input');
         const size = range.value;
 
-        document.getElementById("size-label").textContent = size;
+        document.getElementById('size-label').textContent = size;
 
         boardSize = size;
       }
@@ -77,9 +72,8 @@
           const boxesMetadataRow = [];
 
           for (let x = 0; x < boardSize; x++) {
-            const box = document.createElement("div");
-            box.className = "box";
-            box.setAttribute("id", "pos-" + x + "-" + y);
+            const box = document.createElement('div');
+            box.setAttribute('id', 'pos-' + x + '-' + y);
             board.appendChild(box);
             boxesMetadataRow.push({ food: false });
           }
@@ -110,46 +104,50 @@
           //   -1 - snake moves up or left
           //   1 - snake moves down or right
 
-          case "ArrowRight": {
+          case 'ArrowRight': {
             if (!direction && directionChange == -1) {
               directionHasChanged = false;
               break;
             }
 
             direction = false;
+            oldDirectionChange = directionChange;
             directionChange = 1;
             directionHasChanged = true;
             break;
           }
-          case "ArrowDown": {
+          case 'ArrowDown': {
             if (direction && directionChange == -1) {
               directionHasChanged = false;
               break;
             }
 
             direction = true;
+            oldDirectionChange = directionChange;
             directionChange = 1;
             directionHasChanged = true;
             break;
           }
-          case "ArrowLeft": {
+          case 'ArrowLeft': {
             if (!direction && directionChange == 1) {
               directionHasChanged = false;
               break;
             }
 
             direction = false;
+            oldDirectionChange = directionChange;
             directionChange = -1;
             directionHasChanged = true;
             break;
           }
-          case "ArrowUp": {
+          case 'ArrowUp': {
             if (direction && directionChange == 1) {
               directionHasChanged = false;
               break;
             }
 
             direction = true;
+            oldDirectionChange = directionChange;
             directionChange = -1;
             directionHasChanged = true;
             break;
@@ -160,52 +158,47 @@
       function moveSnake() {
         const snakeHead = snakeBody[snakeBody.length - 1];
 
-        let newHead;
+        let newHeadPos;
         let snakeTurn;
 
         if (direction) {
           // moving verticaly
-          newHead = {
+          newHeadPos = {
             x: snakeHead.x,
             y: snakeHead.y + directionChange,
           };
 
-          snakeTurn = directionChange < 0 ? "up" : "down";
+          snakeTurn = directionChange < 0 ? 'up' : 'down';
         } else {
           // moving horizontaly
-          newHead = {
+          newHeadPos = {
             x: snakeHead.x + directionChange,
             y: snakeHead.y,
           };
 
-          snakeTurn = directionChange < 0 ? "left" : "right";
+          snakeTurn = directionChange < 0 ? 'left' : 'right';
         }
 
-        console.log(newHead);
+        console.log(newHeadPos);
 
         let boxMetadata;
         try {
-          boxMetadata = boxesMetadata[newHead.y][newHead.x];
+          boxMetadata = boxesMetadata[newHeadPos.y][newHeadPos.x];
         } catch (err) {
-          endGame("1");
+          endGame('1');
           return;
         }
 
-        const tdHead = document.getElementById(
-          "pos-" + newHead.x + "-" + newHead.y
-        );
+        const newHeadDiv = document.getElementById('pos-' + newHeadPos.x + '-' + newHeadPos.y);
 
         if (boxMetadata?.food) {
-          boxesMetadata[newHead.y][newHead.x].food = false;
-          tdHead.replaceChildren();
+          boxesMetadata[newHeadPos.y][newHeadPos.x].food = false;
           newSnakeFood();
         } else {
           const snakeButt = snakeBody[0];
 
-          const tdButt = document.getElementById(
-            "pos-" + snakeButt.x + "-" + snakeButt.y
-          );
-          tdButt.replaceChildren();
+          const tdButt = document.getElementById('pos-' + snakeButt.x + '-' + snakeButt.y);
+          tdButt.className = '';
 
           boxesMetadata[snakeButt.y][snakeButt.x].snake = false;
 
@@ -213,17 +206,31 @@
         }
 
         if (boxMetadata === undefined || boxMetadata.snake == true) {
-          endGame("2");
+          endGame('2');
           return;
         }
 
-        boxesMetadata[newHead.y][newHead.x].snake = true;
+        boxesMetadata[newHeadPos.y][newHeadPos.x].snake = true;
 
-        snakeBody.push(newHead);
+        snakeBody.push(newHeadPos);
 
-        const headTextureDiv = document.createElement("div");
-        headTextureDiv.className = "tile snake-head-" + snakeTurn;
-        tdHead.appendChild(headTextureDiv);
+        // Textures - head
+        newHeadDiv.className = 'tile snake-head-' + snakeTurn;
+
+        // Textures - body
+        const snakeLength = snakeBody.length;
+        if (snakeLength > 1) {
+          console.log(snakeBody);
+          const beforeHeadPos = snakeBody[snakeLength - 2];
+          console.log('pos', beforeHeadPos);
+          const beforeHeadDivId = 'pos-' + beforeHeadPos.x + '-' + beforeHeadPos.y;
+          const beforeHeadDiv = document.getElementById(beforeHeadDivId);
+          beforeHeadDiv.className = 'tile ' + getSnakeBodyTexture();
+        }
+
+        // Textures - tail
+        const tailDivPos = snakeBody[0];
+        const tailDiv = document.getElementById('pos-' + tailDivPos.x + '-' + tailDivPos.y);
       }
 
       function newSnakeFood() {
@@ -235,31 +242,68 @@
           return;
         }
 
-        const foodImg = document.createElement("div");
-        foodImg.className = "snake-food";
+        const foodImg = document.createElement('div');
+        foodImg.className = 'snake-food';
 
-        const tdRandom = document.getElementById(
-          "pos-" + randomX + "-" + randomY
-        );
+        const tdRandom = document.getElementById('pos-' + randomX + '-' + randomY);
         tdRandom.appendChild(foodImg);
 
         boxesMetadata[randomY][randomX].food = true;
+      }
+
+      function getSnakeBodyTexture() {
+        if (directionHasChanged) {
+          // Snake edge
+          if (direction) {
+            // now moves verticaly
+            if (directionChange < 0) {
+              // -1 - goes up
+              return oldDirectionChange < 0 ? 'snake-edge-right-up' : 'snake-edge-left-up';
+            } else {
+              // 1 - goes down
+              return oldDirectionChange < 0 ? 'snake-edge-right-down' : 'snake-edge-left-down';
+            }
+          } else {
+            // now moves horizontaly
+            if (directionChange < 0) {
+              // -1 - goes left
+              return oldDirectionChange < 0 ? 'snake-edge-left-down' : 'snake-edge-left-up';
+            } else {
+              // 1 - goes right
+              return oldDirectionChange < 0 ? 'snake-edge-right-down' : 'snake-edge-right-up';
+            }
+          }
+        } else {
+          // Straight snake
+          direction ? 'snake-straight-ver' : 'snake-straight-hor';
+        }
+      }
+
+      function setSnakeTailTexture() {
+        const tailDivPos = snakeBody[0];
+        const beforeTailDivPos = snakeBody[1];
+
+        const verDiff = tailDivPos.x - beforeTailDivPos.x;
+        const horDiff = tailDivPos.y - beforeTailDivPos.y;
+        if (verDif) {
+          console.log(verDif);
+        }
       }
 
       function endGame(type) {
         clearInterval(snakeMoving);
         clearInterval(foodSpawning);
 
-        document.getElementById("end").style.display = "flex";
-        document.getElementById("board").style.opacity = "0.3";
+        document.getElementById('end').style.display = 'flex';
+        document.getElementById('board').style.opacity = '0.3';
 
-        const scoreDiv = document.getElementById("end-score");
-        scoreDiv.textContent = "Wynik: " + snakeBody.length;
+        const scoreDiv = document.getElementById('end-score');
+        scoreDiv.textContent = 'Wynik: ' + snakeBody.length;
       }
 
       function reset() {
-        document.getElementById("end").style.display = "none";
-        document.getElementById("board").style.opacity = "1";
+        document.getElementById('end').style.display = 'none';
+        document.getElementById('board').style.opacity = '1';
 
         render();
       }

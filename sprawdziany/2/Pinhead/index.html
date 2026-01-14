@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Pinhead</title>
+  </head>
+  <body id="body">
+    <div id="balls"></div>
+    <div id="player"></div>
+    <div id="points">Punkty: 0</div>
+  </body>
+  <script>
+    const ballsDiv = document.getElementById('balls');
+    let ballsArray = [];
+    let playerPos = 0;
+    let points = 0;
+
+    for (let i = 0; i < 9; i++) {
+      let column = [];
+      for (let j = 0; j < 3; j++) {
+        const ball = document.createElement('div');
+        ball.className = 'ball';
+        ball.style.top = j * 50 + 'px';
+        ball.style.left = i * 50 + 'px';
+        ball.style.background = '#77ff11';
+        ball.id = 'ball-' + i + '-' + j;
+        ballsDiv.append(ball);
+        column.push(true);
+      }
+      ballsArray.push(column);
+    }
+
+    const body = document.getElementById('body');
+    body.addEventListener('mousemove', playerMoving);
+
+    const playerDiv = document.getElementById('player');
+
+    setInterval(fallBall, 2000);
+
+    function playerMoving(e) {
+      playerPos = e.clientX - 20;
+      playerDiv.style.left = playerPos + 'px';
+    }
+
+    function fallBall() {
+      const { x, y } = chooseBall();
+
+      const ball = document.getElementById('ball-' + x + '-' + y);
+      let ballTop = parseInt(ball.style.top);
+
+      const ballPos = x * 50 + 50;
+
+      const interval = setInterval(() => {
+        ballTop += 3;
+        ball.style.top = ballTop + 'px';
+
+        if (ballTop > 270) {
+          if (ballTop > 320) {
+            clearInterval(interval);
+          }
+
+          const abs = Math.abs(ballPos - playerPos);
+          if (abs < 30) {
+            clearInterval(interval);
+            addPoint();
+            ball.style.background = 'orange';
+            setTimeout(() => {
+              ball.style.opacity = 0;
+            }, 500);
+          }
+        }
+      }, 10);
+    }
+
+    function chooseBall() {
+      const randomColumn = Math.floor(Math.random() * 9);
+
+      const length = ballsArray[randomColumn].length;
+      ballsArray[randomColumn].pop();
+
+      if (length == 0) {
+        return chooseBall();
+      }
+
+      return {
+        x: randomColumn,
+        y: length - 1,
+      };
+    }
+
+    const pointsDiv = document.getElementById('points');
+    function addPoint() {
+      points++;
+      pointsDiv.textContent = 'Punkty: ' + points;
+    }
+  </script>
+</html>

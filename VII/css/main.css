@@ -23,7 +23,7 @@ p {
   border: 5px dashed lightblue;
 }
 
-.box {
+#board div {
   display: grid;
 
   width: 32px;

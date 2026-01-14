@@ -1,0 +1,24 @@
+#balls {
+  position: absolute;
+  top: 50px;
+  left: 50px;
+}
+
+.ball {
+  position: absolute;
+  height: 40px;
+  aspect-ratio: 1;
+  border-radius: 100%;
+}
+
+#player {
+  position: absolute;
+  top: 350px;
+  height: 80px;
+  width: 40px;
+  background: lightseagreen;
+}
+
+body {
+  height: 400px;
+}

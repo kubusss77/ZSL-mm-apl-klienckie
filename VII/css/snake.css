@@ -36,18 +36,45 @@
 
 /* Edge */
 
-.snake-edge-left-down {
+.snake-edge-right-down {
   background-position: 0px 0px;
 }
 
-.snake-edge-right-down {
-  background-position: 0px -64px;
-}
-
-.snake-edge-left-up {
-  background-position: 0px -64px;
+.snake-edge-left-down {
+  background-position: -64px 0px;
 }
 
 .snake-edge-right-up {
+  background-position: 0px -32px;
+}
+
+.snake-edge-left-up {
   background-position: -64px -64px;
+}
+
+/* Straight */
+
+.snake-straight-hor {
+  background-position: 0px -32px;
+}
+
+.snake-straight-ver {
+  background-position: -32px -64px;
+}
+
+/* Tail */
+.snake-tail-up {
+  background-position: -96px -64px;
+}
+
+.snake-tail-right {
+  background-position: -128px -64px;
+}
+
+.snake-tail-left {
+  background-position: -96px -96px;
+}
+
+.snake-tail-down {
+  background-position: -128px -96px;
 }
