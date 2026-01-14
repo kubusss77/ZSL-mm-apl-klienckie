@@ -1,0 +1,63 @@
+#blocks {
+  position: absolute;
+  top: 50px;
+  left: 50px;
+  width: 670px;
+  height: 600px;
+
+  border: dashed 5px lavender;
+}
+#blocks .block {
+  position: absolute;
+  width: 50px;
+  height: 20px;
+  margin: 10px;
+}
+
+#ball {
+  position: absolute;
+  height: 20px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background-color: blueviolet;
+}
+
+#player-area {
+  position: absolute;
+  height: 300px;
+  width: 560px;
+  top: 350px;
+  left: 105px;
+}
+
+#player {
+  position: absolute;
+  background: black;
+  top: 290px;
+  height: 10px;
+  width: 100px;
+}
+
+.color-0 {
+  background: gray;
+}
+
+.color-1 {
+  background: lightcoral;
+}
+
+.color-2 {
+  background: lightskyblue;
+}
+
+.color-3 {
+  background: lightsalmon;
+}
+
+.color-4 {
+  background: lightpink;
+}
+
+.color-5 {
+  background: lightgreen;
+}

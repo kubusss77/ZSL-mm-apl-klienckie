@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="blocks">
+      <div id="ball"></div>
+    </div>
+    <div id="player-area">
+      <div id="player"></div>
+    </div>
+  </body>
+  <script>
+    const blocksDiv = document.getElementById('blocks');
+
+    const blocksArray = [];
+    for (let i = 0; i < 11; i++) {
+      for (let j = 0; j < 6; j++) {
+        const blockDiv = document.createElement('div');
+        blockDiv.className = 'block color-' + j;
+        blockDiv.style.left = i * 60 + 'px';
+        blockDiv.style.top = j * 30 + 'px';
+        blockDiv.id = 'pos-' + i + '-' + j;
+
+        blocksDiv.append(blockDiv);
+      }
+      blocksArray.push(6);
+    }
+
+    const playerAreaDiv = document.getElementById('player-area');
+    playerAreaDiv.addEventListener('mousemove', playerMove);
+
+    const playerDiv = document.getElementById('player');
+    let playerPos = 0;
+    function playerMove(e) {
+      playerPos = parseInt(e.clientX);
+      playerDiv.style.left = playerPos - 150 + 'px';
+    }
+
+    const ballDiv = document.getElementById('ball');
+    const ballTicking = setInterval(tickBall, 5);
+
+    let ballX = 335;
+    let ballY = 560;
+
+    ballDiv.style.left = ballX + 'px';
+    ballDiv.style.top = ballY + 'px';
+
+    let ballDirection = 4;
+    function tickBall() {
+      switch (ballDirection) {
+        case 1: {
+          if (ballY > 180) {
+            if (ballX < 650) {
+              ballX += 2;
+              ballY -= 2;
+              ballDiv.style.left = ballX + 'px';
+              ballDiv.style.top = ballY + 'px';
+            } else {
+              ballDirection = 4;
+            }
+          } else {
+            ballDirection = 2;
+          }
+          break;
+        }
+        case 2: {
+          if (ballX < 650) {
+            if (ballY < 560) {
+              ballX += 2;
+              ballY += 2;
+              ballDiv.style.left = ballX + 'px';
+              ballDiv.style.top = ballY + 'px';
+            } else {
+              const abs = Math.abs(playerPos - 50 - ballX);
+              console.log(abs);
+              if (abs < 60) {
+                ballDirection = 1;
+              } else {
+                clearInterval(ballTicking);
+              }
+            }
+          } else {
+            ballDirection = 3;
+          }
+          break;
+        }
+        case 3: {
+          if (ballY < 560) {
+            if (ballX > 0) {
+              ballX -= 2;
+              ballY += 2;
+              ballDiv.style.left = ballX + 'px';
+              ballDiv.style.top = ballY + 'px';
+            } else {
+              ballDirection = 2;
+            }
+          } else {
+            const abs = Math.abs(playerPos - 50 - ballX);
+            console.log(abs);
+            if (abs < 60) {
+              ballDirection = 4;
+            } else {
+              clearInterval(ballTicking);
+            }
+          }
+          break;
+        }
+        case 4: {
+          if (ballX > 0) {
+            if (ballY > 180) {
+              ballX -= 2;
+              ballY -= 2;
+              ballDiv.style.left = ballX + 'px';
+              ballDiv.style.top = ballY + 'px';
+            } else {
+              if (removeBlock()) {
+                ballDirection = 3;
+              }
+            }
+          } else {
+            ballDirection = 1;
+          }
+          break;
+        }
+      }
+    }
+
+    function removeBlock() {
+      const column = Math.floor((ballX + 50) / 60);
+      const row = Math.floor(ballY / 30);
+
+      if (blocksArray[column] == row) {
+        const block = document.getElementById('pos-' + (column - 1) + '-' + (row - 1));
+        block.style.display = 'none';
+        blocksArray[column]--;
+        return true;
+      }
+
+      return false;
+    }
+  </script>
+</html>
