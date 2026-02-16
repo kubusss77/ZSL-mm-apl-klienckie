@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dratewka the Shoemaker</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="game-window">
+      <div id="game-window-controls">
+        <h1>Dratewka the Shoemaker</h1>
+      </div>
+      <div id="game-window-content">
+        <p id="location-desc"></p>
+        <div id="gfx">
+          <img id="gfx-img" />
+        </div>
+        <p id="available-paths"></p>
+        <p id="visible-items"></p>
+        <p id="carried-items"></p>
+        <div id="what-now">
+          <p id="what-now-text">What now?</p>
+          <input id="user-input" type="text" autofocus autocomplete="off" />
+        </div>
+      </div>
+    </div>
+  </body>
+  <script type="module">
+    import { Game } from './scripts/game.js';
+    const game = new Game();
+    game.start();
+  </script>
+</html>
