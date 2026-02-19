@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -24,7 +24,6 @@
       <p id="end-score"></p>
       <button onclick="reset()">Reset</button>
     </div>
-    <div class="snake-head-right snake">dd</div>
 
     <script>
       const SNAKE_MOVE_INTERVAL = 200;
@@ -33,7 +32,8 @@
       let boxesMetadata = [];
       let snakeBody = [];
       let boardSize;
-      let direction;
+      let newDirection;
+      let oldDirection;
       let directionHasChanged;
       let oldDirectionChange;
       let directionChange;
@@ -105,52 +105,73 @@
           //   1 - snake moves down or right
 
           case 'ArrowRight': {
-            if (!direction && directionChange == -1) {
-              directionHasChanged = false;
+            if (oldDirection === 3) {
               break;
             }
 
-            direction = false;
-            oldDirectionChange = directionChange;
-            directionChange = 1;
-            directionHasChanged = true;
+            newDirection = 1;
             break;
+            // if (!direction && directionChange == -1) {
+            //   directionHasChanged = false;
+            //   break;
+            // }
+
+            // direction = false;
+            // oldDirectionChange = directionChange;
+            // directionChange = 1;
+            // directionHasChanged = true;
+            // break;
           }
           case 'ArrowDown': {
-            if (direction && directionChange == -1) {
-              directionHasChanged = false;
+            if (oldDirection === 0) {
               break;
             }
 
-            direction = true;
-            oldDirectionChange = directionChange;
-            directionChange = 1;
-            directionHasChanged = true;
+            newDirection = 2;
             break;
+            // if (direction && directionChange == -1) {
+            //   directionHasChanged = false;
+            //   break;
+            // }
+            // direction = true;
+            // oldDirectionChange = directionChange;
+            // directionChange = 1;
+            // directionHasChanged = true;
+            // break;
           }
           case 'ArrowLeft': {
-            if (!direction && directionChange == 1) {
-              directionHasChanged = false;
+            if (oldDirection === 1) {
               break;
             }
 
-            direction = false;
-            oldDirectionChange = directionChange;
-            directionChange = -1;
-            directionHasChanged = true;
+            newDirection = 3;
             break;
+            // if (!direction && directionChange == 1) {
+            //   directionHasChanged = false;
+            //   break;
+            // }
+            // direction = false;
+            // oldDirectionChange = directionChange;
+            // directionChange = -1;
+            // directionHasChanged = true;
+            // break;
           }
           case 'ArrowUp': {
-            if (direction && directionChange == 1) {
-              directionHasChanged = false;
+            if (oldDirection === 2) {
               break;
             }
 
-            direction = true;
-            oldDirectionChange = directionChange;
-            directionChange = -1;
-            directionHasChanged = true;
+            newDirection = 0;
             break;
+            // if (direction && directionChange == 1) {
+            //   directionHasChanged = false;
+            //   break;
+            // }
+            // direction = true;
+            // oldDirectionChange = directionChange;
+            // directionChange = -1;
+            // directionHasChanged = true;
+            // break;
           }
         }
       }
@@ -161,30 +182,72 @@
         let newHeadPos;
         let snakeTurn;
 
-        if (direction) {
-          // moving verticaly
-          newHeadPos = {
-            x: snakeHead.x,
-            y: snakeHead.y + directionChange,
-          };
-
-          snakeTurn = directionChange < 0 ? 'up' : 'down';
-        } else {
-          // moving horizontaly
-          newHeadPos = {
-            x: snakeHead.x + directionChange,
-            y: snakeHead.y,
-          };
-
-          snakeTurn = directionChange < 0 ? 'left' : 'right';
+        switch (newDirection) {
+          // Up
+          case 0: {
+            newHeadPos = {
+              x: snakeHead.x,
+              y: snakeHead.y - 1,
+            };
+            oldDirection = newDirection;
+            console.log('up');
+            break;
+          }
+          // Right
+          case 1: {
+            newHeadPos = {
+              x: snakeHead.x + 1,
+              y: snakeHead.y,
+            };
+            oldDirection = newDirection;
+            console.log('right');
+            break;
+          }
+          // Down
+          case 2: {
+            newHeadPos = {
+              x: snakeHead.x,
+              y: snakeHead.y + 1,
+            };
+            oldDirection = newDirection;
+            console.log('down');
+            break;
+          }
+          // Left
+          case 3: {
+            newHeadPos = {
+              x: snakeHead.x - 1,
+              y: snakeHead.y,
+            };
+            oldDirection = newDirection;
+            console.log('left');
+            break;
+          }
         }
 
-        console.log(newHeadPos);
+        // if (direction) {
+        //   // moving verticaly
+        //   newHeadPos = {
+        //     x: snakeHead.x,
+        //     y: snakeHead.y + directionChange,
+        //   };
+
+        //   snakeTurn = directionChange < 0 ? 'up' : 'down';
+        // } else {
+        //   // moving horizontaly
+        //   newHeadPos = {
+        //     x: snakeHead.x + directionChange,
+        //     y: snakeHead.y,
+        //   };
+
+        //   snakeTurn = directionChange < 0 ? 'left' : 'right';
+        // }
 
         let boxMetadata;
         try {
           boxMetadata = boxesMetadata[newHeadPos.y][newHeadPos.x];
         } catch (err) {
+          console.log(err);
           endGame('1');
           return;
         }
@@ -193,6 +256,9 @@
 
         if (boxMetadata?.food) {
           boxesMetadata[newHeadPos.y][newHeadPos.x].food = false;
+
+          document.getElementsByClassName('snake-food')[0].className = '';
+
           newSnakeFood();
         } else {
           const snakeButt = snakeBody[0];
@@ -204,6 +270,8 @@
 
           snakeBody.shift();
         }
+
+        console.table(boxMetadata);
 
         if (boxMetadata === undefined || boxMetadata.snake == true) {
           endGame('2');

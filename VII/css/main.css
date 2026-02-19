@@ -27,7 +27,7 @@ p {
   display: grid;
 
   width: 32px;
-  aspect-ratio: 1;
+  height: 32px;
   border: 1px dotted lightblue;
 }
 
