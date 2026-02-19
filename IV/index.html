@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -60,6 +60,11 @@
         text-align: center;
         border-radius: 20px;
         padding: 10px;
+      }
+
+      #scores-table-cont {
+        display: flex;
+        justify-content: center;
       }
     </style>
     <script>
@@ -167,10 +172,9 @@
 
                 score++;
 
-                if (score > -1) {
+                if (score >= 8) {
                   endGame();
                   userTime = timeMs - (endDate - Date.now());
-                  console.log(userTime)
                   document.getElementById('save-score').style.display = 'block';
                 }
 
@@ -224,94 +228,98 @@
         firstCard = false;
         secondCard = false;
         score = false;
-        scoreSaved = false;
+        scoreSaved = true;
       }
 
       function saveScore() {
-        if(scoreSaved) return;
+        if (scoreSaved) return;
         scoreSaved = true;
-        const nick = document.getElementById('save-score-nick').value
-        const scoresCookie = document.cookie.split(';').find(scoreTable => scoreTable.includes('scoresTable' + timeMs / 1000));
+        const nick = document.getElementById('save-score-nick').value;
+        const scoresCookie = document.cookie
+          .split(';')
+          .find((scoreTable) => scoreTable.includes('scoresTable' + timeMs / 1000));
         let scoresTable = [];
         if (!scoresCookie) {
-          console.log('new scores table')
+          console.log('new scores table');
           scoresTable.push({
             nick,
             userTime,
-          })
+          });
 
-          const scoresEncoded = encodeURIComponent(JSON.stringify(scoresTable))
-          document.cookie = "scoresTable" + timeMs / 1000 + '=' + scoresEncoded;
+          const scoresEncoded = encodeURIComponent(JSON.stringify(scoresTable));
+          document.cookie = 'scoresTable' + timeMs / 1000 + '=' + scoresEncoded;
         } else {
-          console.log('scores table present')
-          const scoresDecoded = JSON.parse(decodeURIComponent(scoresCookie.split('=')[1]))
+          console.log('scores table present');
+          const scoresDecoded = JSON.parse(decodeURIComponent(scoresCookie.split('=')[1]));
           scoresTable = scoresDecoded;
 
-          scoresTable.sort(function(a, b) {
-            if (a.userTime > b.userTime) return -1
-          })
-          
+          scoresTable.sort(function (a, b) {
+            if (a.userTime > b.userTime) return -1;
+          });
 
           scoresTable.push({
             nick,
             userTime,
-          })
+          });
 
-          const scoresEncoded = encodeURIComponent(JSON.stringify(scoresTable))
-          document.cookie = "scoresTable" + timeMs / 1000 + '=' + scoresEncoded;
+          const scoresEncoded = encodeURIComponent(JSON.stringify(scoresTable));
+          document.cookie = 'scoresTable' + timeMs / 1000 + '=' + scoresEncoded;
         }
 
         console.table(scoresTable);
+
+        genScoresTable();
       }
 
       function genScoresTable() {
-        const scoresTable = document.getElementById('scoresTable')
+        const scoresTable = document.getElementById('scoresTable');
 
-        const scoresCookie = document.cookie.split(';').find(scoreTable => scoreTable.includes('scoresTable' + timeMs / 1000));
+        const scoresCookie = document.cookie
+          .split(';')
+          .find((scoreTable) => scoreTable.includes('scoresTable' + timeMs / 1000));
         if (!scoresCookie) {
-          scoresTable.textContent = 'Tablica wyników jest pusta.'
+          scoresTable.textContent = 'Tablica wyników jest pusta.';
           return;
         }
 
-        scoresTable.replaceChildren()
-        
-        const thPosition = document.createElement('th')
-        thPosition.textContent = 'Miejsce'
+        scoresTable.replaceChildren();
 
-        const thNick = document.createElement('th')
-        thNick.textContent = 'Nick gracza'
+        const thPosition = document.createElement('th');
+        thPosition.textContent = 'Miejsce';
 
-        const thTime = document.createElement('th')
-        thTime.textContent = 'Czas'
+        const thNick = document.createElement('th');
+        thNick.textContent = 'Nick gracza';
 
-        const trHeader = document.createElement('tr')
-        trHeader.appendChild(thPosition)
-        trHeader.appendChild(thNick)
-        trHeader.appendChild(thTime)
-        scoresTable.appendChild(trHeader)
+        const thTime = document.createElement('th');
+        thTime.textContent = 'Czas';
 
-        const scoresDecoded = JSON.parse(decodeURIComponent(scoresCookie.split('=')[1]))
+        const trHeader = document.createElement('tr');
+        trHeader.appendChild(thPosition);
+        trHeader.appendChild(thNick);
+        trHeader.appendChild(thTime);
+        scoresTable.appendChild(trHeader);
+
+        const scoresDecoded = JSON.parse(decodeURIComponent(scoresCookie.split('=')[1]));
 
         scoresDecoded.forEach((score, index) => {
-          const tdPosition = document.createElement('td')
-          tdPosition.textContent = index + 1
+          const tdPosition = document.createElement('td');
+          tdPosition.textContent = index + 1;
 
-          const tdNick = document.createElement('td')
-          tdNick.textContent = score.nick
+          const tdNick = document.createElement('td');
+          tdNick.textContent = score.nick;
 
-          const userTime = new Date(score.userTime)
-          const tdTime = document.createElement('td')
-          tdTime.textContent = userTime.getSeconds() + ':' + userTime.getMilliseconds()
+          const userTime = new Date(score.userTime);
+          const tdTime = document.createElement('td');
+          tdTime.textContent = userTime.getSeconds() + ':' + userTime.getMilliseconds();
 
-          const tr = document.createElement('tr')
-          tr.appendChild(tdPosition)
-          tr.appendChild(tdNick)
-          tr.appendChild(tdTime)
+          const tr = document.createElement('tr');
+          tr.appendChild(tdPosition);
+          tr.appendChild(tdNick);
+          tr.appendChild(tdTime);
 
-          scoresTable.appendChild(tr)
-        })
+          scoresTable.appendChild(tr);
+        });
       }
-
     </script>
   </head>
   <body>
@@ -324,7 +332,7 @@
       <div id="start">
         <img src="img/czolowa.png" usemap="#start-map" />
         <map name="start-map">
-          <area onclick="startGame(3)" target="" alt="" title="" coords="44,42,337,64,71,154" shape="poly" />
+          <area onclick="startGame(30)" target="" alt="" title="" coords="44,42,337,64,71,154" shape="poly" />
           <area onclick="startGame(60)" target="" alt="" title="" coords="85,219,342,110,367,234" shape="poly" />
           <area onclick="startGame(90)" target="" alt="" title="" coords="96,269,370,301,117,382" shape="poly" />
         </map>
@@ -335,11 +343,13 @@
         <p id="wynik"></p>
         <button onclick="resetGame()">Reset gry</button>
       </div>
-      <div id="save-score" style="display: none;">
-        <input type="text" value="Twój nick" id="save-score-nick">
+      <div id="save-score" style="display: none">
+        <input type="text" value="Twój nick" id="save-score-nick" />
         <button onclick="saveScore()">Zapisz</button>
       </div>
-      <table id="scoresTable"></table>
+      <div id="scores-table-cont">
+        <table id="scoresTable"></table>
+      </div>
     </div>
   </body>
 </html>
