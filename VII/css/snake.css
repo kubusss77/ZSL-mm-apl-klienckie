@@ -11,7 +11,7 @@
 .tile {
   background-image: url(../texturePack.png);
   background-repeat: no-repeat;
-  background-size: 160px 128px; /* Połowa oryginalnej wielkos\ści*/
+  background-size: 160px 128px;
   width: 32px;
   height: 32px;
 }
@@ -55,11 +55,11 @@
 /* Straight */
 
 .snake-straight-hor {
-  background-position: 0px -32px;
+  background-position: -32px -0px;
 }
 
 .snake-straight-ver {
-  background-position: -32px -64px;
+  background-position: -64px -32px;
 }
 
 /* Tail */
@@ -77,4 +77,9 @@
 
 .snake-tail-down {
   background-position: -128px -96px;
+}
+
+/* Other */
+.snake-food {
+  background-position: 0 -96px;
 }

@@ -20,7 +20,7 @@ p {
 
 #board {
   display: grid;
-  border: 5px dashed lightblue;
+  border: 5px solid cornflowerblue;
 }
 
 #board div {
@@ -28,18 +28,8 @@ p {
 
   width: 32px;
   height: 32px;
-  border: 1px dotted lightblue;
-}
-
-.snake-food {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 1;
-  grid-area: 1 / 1;
-  z-index: 1;
-
-  background: yellowgreen;
-  border-radius: 100%;
+  background-color: lightblue;
+  border: 1px dashed cornflowerblue;
 }
 
 .row {

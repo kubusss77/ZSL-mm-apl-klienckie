@@ -34,10 +34,7 @@
       let boardSize;
       let newDirection;
       let oldDirection;
-      let directionHasChanged;
-      let oldDirectionChange;
-      let directionChange;
-      let tailDirection;
+      let directionChanged;
       let gameStarted;
       let snakeMoving;
       let foodSpawning;
@@ -87,91 +84,68 @@
         });
       }
 
-      function keyDown(event) {
+      function startGame() {
         if (!gameStarted) {
           gameStarted = true;
           snakeMoving = setInterval(moveSnake, SNAKE_MOVE_INTERVAL);
 
           newSnakeFood();
         }
+      }
 
+      function keyDown(event) {
         switch (event.key) {
-          // direction (boolean):
-          //   true - snake moves verticaly
-          //   false - snake moves horizontaly
-
-          // directionChange (number):
-          //   -1 - snake moves up or left
-          //   1 - snake moves down or right
+          // 0 - up
+          // 1 - right
+          // 2 - down
+          // 3 - left
 
           case 'ArrowRight': {
             if (oldDirection === 3) {
               break;
             }
 
-            newDirection = 1;
-            break;
-            // if (!direction && directionChange == -1) {
-            //   directionHasChanged = false;
-            //   break;
-            // }
+            startGame();
 
-            // direction = false;
-            // oldDirectionChange = directionChange;
-            // directionChange = 1;
-            // directionHasChanged = true;
-            // break;
+            newDirection = 1;
+            directionChanged = true;
+            break;
           }
+
           case 'ArrowDown': {
             if (oldDirection === 0) {
               break;
             }
 
+            startGame();
+
             newDirection = 2;
+            directionChanged = true;
             break;
-            // if (direction && directionChange == -1) {
-            //   directionHasChanged = false;
-            //   break;
-            // }
-            // direction = true;
-            // oldDirectionChange = directionChange;
-            // directionChange = 1;
-            // directionHasChanged = true;
-            // break;
           }
+
           case 'ArrowLeft': {
             if (oldDirection === 1) {
               break;
             }
 
+            startGame();
+
             newDirection = 3;
+            directionChanged = true;
             break;
-            // if (!direction && directionChange == 1) {
-            //   directionHasChanged = false;
-            //   break;
-            // }
-            // direction = false;
-            // oldDirectionChange = directionChange;
-            // directionChange = -1;
-            // directionHasChanged = true;
-            // break;
           }
+
           case 'ArrowUp': {
             if (oldDirection === 2) {
               break;
             }
 
+            startGame();
+
             newDirection = 0;
+            directionChanged = true;
             break;
-            // if (direction && directionChange == 1) {
-            //   directionHasChanged = false;
-            //   break;
-            // }
-            // direction = true;
-            // oldDirectionChange = directionChange;
-            // directionChange = -1;
-            // directionHasChanged = true;
-            // break;
           }
         }
       }
@@ -180,7 +154,7 @@
         const snakeHead = snakeBody[snakeBody.length - 1];
 
         let newHeadPos;
-        let snakeTurn;
+        let snakeHeadTurn;
 
         switch (newDirection) {
           // Up
@@ -189,7 +163,10 @@
               x: snakeHead.x,
               y: snakeHead.y - 1,
             };
-            oldDirection = newDirection;
+
+            snakeBody[snakeBody.length - 1].direction = 'up';
+
+            snakeHeadTurn = 'up';
             console.log('up');
             break;
           }
@@ -199,7 +176,10 @@
               x: snakeHead.x + 1,
               y: snakeHead.y,
             };
-            oldDirection = newDirection;
+
+            snakeBody[snakeBody.length - 1].direction = 'right';
+
+            snakeHeadTurn = 'right';
             console.log('right');
             break;
           }
@@ -209,7 +189,10 @@
               x: snakeHead.x,
               y: snakeHead.y + 1,
             };
-            oldDirection = newDirection;
+
+            snakeBody[snakeBody.length - 1].direction = 'down';
+
+            snakeHeadTurn = 'down';
             console.log('down');
             break;
           }
@@ -219,29 +202,14 @@
               x: snakeHead.x - 1,
               y: snakeHead.y,
             };
-            oldDirection = newDirection;
+
+            snakeBody[snakeBody.length - 1].direction = 'left';
+
+            snakeHeadTurn = 'left';
             console.log('left');
             break;
           }
         }
-
-        // if (direction) {
-        //   // moving verticaly
-        //   newHeadPos = {
-        //     x: snakeHead.x,
-        //     y: snakeHead.y + directionChange,
-        //   };
-
-        //   snakeTurn = directionChange < 0 ? 'up' : 'down';
-        // } else {
-        //   // moving horizontaly
-        //   newHeadPos = {
-        //     x: snakeHead.x + directionChange,
-        //     y: snakeHead.y,
-        //   };
-
-        //   snakeTurn = directionChange < 0 ? 'left' : 'right';
-        // }
 
         let boxMetadata;
         try {
@@ -283,22 +251,45 @@
         snakeBody.push(newHeadPos);
 
         // Textures - head
-        newHeadDiv.className = 'tile snake-head-' + snakeTurn;
+        newHeadDiv.className = 'tile snake-head-' + snakeHeadTurn;
 
         // Textures - body
         const snakeLength = snakeBody.length;
         if (snakeLength > 1) {
-          console.log(snakeBody);
           const beforeHeadPos = snakeBody[snakeLength - 2];
-          console.log('pos', beforeHeadPos);
           const beforeHeadDivId = 'pos-' + beforeHeadPos.x + '-' + beforeHeadPos.y;
           const beforeHeadDiv = document.getElementById(beforeHeadDivId);
-          beforeHeadDiv.className = 'tile ' + getSnakeBodyTexture();
+
+          if (snakeLength > 2) {
+            if (directionChanged) {
+              if ((oldDirection == 0 && newDirection == 1) || (oldDirection == 3 && newDirection == 2)) {
+                beforeHeadDiv.className = 'tile snake-edge-right-down';
+              } else if ((oldDirection == 1 && newDirection == 2) || (oldDirection == 0 && newDirection == 3)) {
+                beforeHeadDiv.className = 'tile snake-edge-left-down';
+              } else if ((oldDirection == 2 && newDirection == 3) || (oldDirection == 1 && newDirection == 0)) {
+                beforeHeadDiv.className = 'tile snake-edge-left-up';
+              } else {
+                beforeHeadDiv.className = 'tile snake-edge-right-up';
+              }
+            } else {
+              if (newDirection == 0 || newDirection == 2) {
+                console.log('straight');
+                beforeHeadDiv.className = 'tile snake-straight-ver';
+              } else {
+                beforeHeadDiv.className = 'tile snake-straight-hor';
+              }
+            }
+          }
+
+          const snakeEndPos = snakeBody[0];
+          const snakeEndDivId = 'pos-' + snakeEndPos.x + '-' + snakeEndPos.y;
+          const snakeEndDiv = document.getElementById(snakeEndDivId);
+
+          snakeEndDiv.className = 'tile snake-tail-' + snakeEndPos.direction;
         }
 
-        // Textures - tail
-        const tailDivPos = snakeBody[0];
-        const tailDiv = document.getElementById('pos-' + tailDivPos.x + '-' + tailDivPos.y);
+        oldDirection = newDirection;
+        directionChanged = false;
       }
 
       function newSnakeFood() {
@@ -310,52 +301,10 @@
           return;
         }
 
-        const foodImg = document.createElement('div');
-        foodImg.className = 'snake-food';
-
         const tdRandom = document.getElementById('pos-' + randomX + '-' + randomY);
-        tdRandom.appendChild(foodImg);
+        tdRandom.className = 'tile snake-food';
 
         boxesMetadata[randomY][randomX].food = true;
-      }
-
-      function getSnakeBodyTexture() {
-        if (directionHasChanged) {
-          // Snake edge
-          if (direction) {
-            // now moves verticaly
-            if (directionChange < 0) {
-              // -1 - goes up
-              return oldDirectionChange < 0 ? 'snake-edge-right-up' : 'snake-edge-left-up';
-            } else {
-              // 1 - goes down
-              return oldDirectionChange < 0 ? 'snake-edge-right-down' : 'snake-edge-left-down';
-            }
-          } else {
-            // now moves horizontaly
-            if (directionChange < 0) {
-              // -1 - goes left
-              return oldDirectionChange < 0 ? 'snake-edge-left-down' : 'snake-edge-left-up';
-            } else {
-              // 1 - goes right
-              return oldDirectionChange < 0 ? 'snake-edge-right-down' : 'snake-edge-right-up';
-            }
-          }
-        } else {
-          // Straight snake
-          direction ? 'snake-straight-ver' : 'snake-straight-hor';
-        }
-      }
-
-      function setSnakeTailTexture() {
-        const tailDivPos = snakeBody[0];
-        const beforeTailDivPos = snakeBody[1];
-
-        const verDiff = tailDivPos.x - beforeTailDivPos.x;
-        const horDiff = tailDivPos.y - beforeTailDivPos.y;
-        if (verDif) {
-          console.log(verDif);
-        }
       }
 
       function endGame(type) {
