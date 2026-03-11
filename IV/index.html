@@ -73,10 +73,12 @@
       let secondCard = false;
       let score = false;
       let timeMs;
+      let timeMsLeft;
       let endDate;
-      let userTime;
       let timerInterval = null;
       let scoreSaved = false;
+
+      console.log(document.cookie);
 
       function startGame(time) {
         timeMs = time * 1000;
@@ -125,9 +127,12 @@
       }
 
       function cardClicked(x, y) {
+        console.log('clicked card: ' + x + ' ' + y);
+        // Starting game on first click
         if (score === false) {
           document.getElementById('progress-outer').style.visibility = 'visible';
           document.getElementById('progress').style.visibility = 'visible';
+          document.getElementById('scores-table-cont').style.display = 'flex';
 
           score = 0;
 
@@ -135,16 +140,17 @@
           const timer = document.getElementById('timer');
           endDate = Date.now() + timeMs;
           timerInterval = setInterval(function () {
-            const timeLeft = new Date(endDate - Date.now());
-            timer.textContent = timeLeft.getMinutes() + ':' + timeLeft.getSeconds() + ':' + timeLeft.getMilliseconds();
-            progress.style.width = (timeLeft / timeMs).toFixed(4) * 100 + '%';
+            timeMsLeft = new Date(endDate - Date.now());
+            timer.textContent = formatDate(timeMsLeft);
+            progress.style.width = (timeMsLeft / timeMs).toFixed(4) * 100 + '%';
 
-            if (timeLeft < 0) {
+            if (timeMsLeft < 0) {
               timer.textContent = 'Koniec czasu!';
-              endGame();
+              endGame(false);
             }
           }, 10);
         }
+
         if (cardsArray[x][y]) {
           if (!secondCard) {
             const card = document.createElement('img');
@@ -161,6 +167,8 @@
 
               // Correct guess
               if (cardsArray[x][y] == cardsArray[firstCard.x][firstCard.y]) {
+                secondCard = false;
+
                 console.log('correct');
                 document.getElementById('first').id = '';
                 document.getElementById('second').id = '';
@@ -168,14 +176,11 @@
                 cardsArray[x][y] = undefined;
                 cardsArray[firstCard.x][firstCard.y] = undefined;
                 firstCard = false;
-                secondCard = false;
 
                 score++;
 
                 if (score >= 8) {
-                  endGame();
-                  userTime = timeMs - (endDate - Date.now());
-                  document.getElementById('save-score').style.display = 'block';
+                  endGame(true);
                 }
 
                 // Incorrect guess
@@ -190,21 +195,25 @@
 
               // Clicking first card
             } else {
-              card.id = 'first';
               firstCard = { x, y };
+              card.id = 'first';
               cards.appendChild(card);
             }
           }
         }
       }
 
-      function endGame() {
+      function endGame(won) {
         clearInterval(timerInterval);
         timerInterval = null;
 
+        if (won) {
+          document.getElementById('save-score').style.display = 'block';
+        }
+
         const hidingCards = document.getElementsByClassName('hidingCard');
-        for (let i = 0; i < hidingCards.length; i++) {
-          hidingCards[i].onclick = null;
+        for (const card of hidingCards) {
+          card.onclick = null;
         }
 
         const end = document.getElementById('end');
@@ -223,17 +232,22 @@
         document.getElementById('progress').style.visibility = 'hidden';
         document.getElementById('timer').textContent = '';
         document.getElementById('end').style.display = 'none';
+        document.getElementById('save-score').style.display = 'none';
+        document.getElementById('scores-table-cont').style.display = 'none';
 
         cardsArray = [];
         firstCard = false;
         secondCard = false;
         score = false;
-        scoreSaved = true;
       }
 
       function saveScore() {
-        if (scoreSaved) return;
-        scoreSaved = true;
+        document.getElementById('save-score').style.display = 'none';
+
+        //userTime = timeMs - (endDate - Date.now());
+        const userTime = timeMs - timeMsLeft;
+        console.log('user time: ' + userTime);
+
         const nick = document.getElementById('save-score-nick').value;
         const scoresCookie = document.cookie
           .split(';')
@@ -253,14 +267,18 @@
           const scoresDecoded = JSON.parse(decodeURIComponent(scoresCookie.split('=')[1]));
           scoresTable = scoresDecoded;
 
-          scoresTable.sort(function (a, b) {
-            if (a.userTime > b.userTime) return -1;
-          });
-
           scoresTable.push({
             nick,
             userTime,
           });
+
+          scoresTable.sort(function (a, b) {
+            if (a.userTime < b.userTime) return -1;
+          });
+
+          if (scoresTable.length > 10) {
+            scoresTable.pop();
+          }
 
           const scoresEncoded = encodeURIComponent(JSON.stringify(scoresTable));
           document.cookie = 'scoresTable' + timeMs / 1000 + '=' + scoresEncoded;
@@ -310,7 +328,7 @@
 
           const userTime = new Date(score.userTime);
           const tdTime = document.createElement('td');
-          tdTime.textContent = userTime.getSeconds() + ':' + userTime.getMilliseconds();
+          tdTime.textContent = formatDate(userTime);
 
           const tr = document.createElement('tr');
           tr.appendChild(tdPosition);
@@ -319,6 +337,13 @@
 
           scoresTable.appendChild(tr);
         });
+      }
+
+      function formatDate(date) {
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        const seconds = date.getSeconds().toString().padStart(2, '0');
+        const milliseconds = date.getMilliseconds().toString().padStart(3, '0');
+        return `${minutes}:${seconds}.${milliseconds}`;
       }
     </script>
   </head>
