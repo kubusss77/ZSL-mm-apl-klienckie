@@ -1,27 +1,50 @@
 import Location from './locations.js';
+import Items from './items.js';
 
-const allowedCommands = ['n', 'e', 's', 'w', 'north', 'east', 'south', 'west', 'v'];
+const allowedDirections = ['N', 'E', 'S', 'W', 'NORTH', 'EAST', 'SOUTH', 'WEST'];
 
 export class Game {
   start() {
-    this.location = new Location(7, 4);
+    this.location = new Location(7, 4, Items.defaultPositions());
+    this.items = new Items();
 
     document.getElementById('location-desc').textContent = this.location.desc;
     document.getElementById('available-paths').textContent = `You can go ${this.location.availablePaths}`;
 
-    document.getElementById('user-input').addEventListener('keydown', this.#handleUserInput.bind(this));
+    const visibleItems = 'You see ' + (this.location.itemsInSight().map(Items.idToFullName).join(', ') || 'nothing');
+    document.getElementById('visible-items').textContent = visibleItems;
+
+    const carriedItem = 'You are carrying ' + (this.items.carriedItem || 'nothing');
+    document.getElementById('carried-item').textContent = carriedItem;
+
+    document.getElementById('user-input').addEventListener('keyup', this.handleUserInput.bind(this));
 
     const gfxImg = document.getElementById('gfx-img');
     gfxImg.src = `assets/img/${this.location.img}`;
     gfxImg.style.backgroundColor = `rgb(${this.location.color.join(',')})`;
   }
 
-  #handleUserInput(e) {
-    if (e.key !== 'Enter') return;
+  handleUserInput(e) {
+    const inputText = e.target.value.trim().toUpperCase();
 
-    const inputText = e.target.value.trim().toLowerCase();
-    e.target.value = '';
-    if (!allowedCommands.includes(inputText)) {
+    setTimeout(() => {
+      e.preventDefault();
+    });
+
+    if (e.key !== 'Enter') return;
+    console.log(`User input: '${inputText}'`);
+
+    if (inputText === 'V') {
+      console.log('Vocabulary:');
+      return;
+    }
+
+    if (inputText.startsWith('TAKE ') || inputText.startsWith('T ')) {
+      this.#take(inputText.split(' ')[1]);
+      return;
+    }
+
+    if (!allowedDirections.includes(inputText)) {
       const whatNowtext = document.getElementById('what-now-text');
       whatNowtext.textContent = 'Try another word or "V" for vocabulary.';
       e.target.style.display = 'none';
@@ -29,11 +52,6 @@ export class Game {
         whatNowtext.textContent = 'What now?';
         e.target.style.display = 'block';
       }, 2000);
-      return;
-    }
-
-    if (inputText === 'v') {
-      console.log('Vocabulary:');
       return;
     }
 
@@ -67,5 +85,20 @@ export class Game {
 
     const locationDescP = document.getElementById('location-desc');
     locationDescP.textContent = this.location.desc;
+
+    const visibleItems = 'You see ' + (this.location.itemsInSight().map(Items.idToFullName).join(', ') || 'nothing');
+    document.getElementById('visible-items').textContent = visibleItems;
+
+    const carriedItem = 'You are carrying ' + (this.items.carriedItem || 'nothing');
+    document.getElementById('carried-item').textContent = carriedItem;
+  }
+
+  #take(item) {
+    try {
+      this.items.carry(item);
+      const carriedItem = 'You are carrying ' + this.items.carriedItem;
+    } catch (error) {
+      console.log(error.message);
+    }
   }
 }
