@@ -21,7 +21,8 @@ export class Game {
 
     const gfxImg = document.getElementById('gfx-img');
     gfxImg.src = `assets/img/${this.location.img}`;
-    gfxImg.style.backgroundColor = `rgb(${this.location.color.join(',')})`;
+    gfxImg.style.backgroundColor = this.location.color;
+    gfxImg.style.borderColor = this.location.color;
   }
 
   handleUserInput(e) {
@@ -35,7 +36,50 @@ export class Game {
     console.log(`User input: '${inputText}'`);
 
     if (inputText === 'V') {
+      document.getElementById('available-paths').innerHTML = `NORTH or N, SOUTH or S, <br>
+      WEST or W, EAST or E <br>
+      TAKE (object) or T (object) <br>
+      DROP (object) or D (object) <br>
+      USE (object) or U (object) <br>
+      GOSSIPS or G, VOCABULARY or V`;
+
+      document.getElementById('carried-items').textContent = 'Press any key';
+      document.getElementById('what-now').style.display = 'none';
+      document.querySelector('body').addEventListener(
+        'input',
+        () => {
+          document.getElementById('available-paths').textContent = `You can go ${this.location.availablePaths}`;
+          document.getElementById('what-now').style.display = 'flex';
+          document.getElementById('carried-items').textContent = '';
+        },
+        { once: true }
+      );
+
       console.log('Vocabulary:');
+      return;
+    }
+
+    if (inputText === 'G') {
+      document.getElementById('available-paths').innerHTML = `The  woodcutter lost  his home key... <br>
+		  The butcher likes fruit... The cooper <br>
+		  is greedy... Dratewka plans to make a <br>
+		  poisoned  bait for the dragon...  The <br>
+		  tavern owner is buying food  from the <br>
+		  pickers... Making a rag from a bag... <br>`;
+
+      document.getElementById('carried-items').textContent = 'Press any key';
+      document.getElementById('what-now').style.display = 'none';
+      document.querySelector('body').addEventListener(
+        'input',
+        () => {
+          document.getElementById('available-paths').textContent = `You can go ${this.location.availablePaths}`;
+          document.getElementById('what-now').style.display = 'flex';
+          document.getElementById('carried-items').textContent = '';
+        },
+        { once: true }
+      );
+
+      console.log('Gossips:');
       return;
     }
 
@@ -81,7 +125,8 @@ export class Game {
 
     const gfxImg = document.getElementById('gfx-img');
     gfxImg.src = `assets/img/${this.location.img}`;
-    gfxImg.style.backgroundColor = `rgb(${this.location.color.join(',')})`;
+    gfxImg.style.backgroundColor = this.location.color;
+    gfxImg.style.borderColor = this.location.color;
 
     const locationDescP = document.getElementById('location-desc');
     locationDescP.textContent = this.location.desc;
