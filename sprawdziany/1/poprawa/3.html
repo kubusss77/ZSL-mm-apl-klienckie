@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      function sylvester(n) {
+        const ciag = [2];
+        for (let i = 0; i < n - 1; i++) {
+          const wyraz = ciag[i] * ciag[i] - ciag[i] + 1;
+          ciag.push(wyraz);
+        }
+
+        return ciag;
+      }
+
+      console.log(sylvester(5));
+    </script>
+  </body>
+</html>

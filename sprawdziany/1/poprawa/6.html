@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      #progress-outer {
+        width: 400px;
+        height: 50px;
+        background: lightgray;
+      }
+
+      #progress-inner {
+        width: 0%;
+        height: 100%;
+        background: lightgreen;
+      }
+    </style>
+  </head>
+  <body>
+    <button onclick="start()">Start</button>
+    <div id="progress-outer">
+      <div id="progress-inner"></div>
+    </div>
+  </body>
+  <script>
+    const outer = document.getElementById("progress-outer");
+    const inner = document.getElementById("progress-inner");
+
+    let time;
+    let width;
+    let interval;
+    let started;
+
+    function start() {
+      inner.style.width = "0%";
+      time = 0;
+      width = 0;
+      clearInterval(interval);
+
+      interval = setInterval(function () {
+        time += 70;
+
+        inner.style.width = width + "%";
+        width++;
+
+        if (time > 7000) {
+          clearInterval(interval);
+          alert("Zakończono!");
+        }
+      }, 70);
+    }
+  </script>
+</html>

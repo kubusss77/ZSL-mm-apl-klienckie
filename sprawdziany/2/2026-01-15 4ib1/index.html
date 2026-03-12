@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div id="balls"></div>
+    <div id="balls-border"></div>
+    <div id="balls-wall"></div>
+
+    <div id="player-area">
+      <div id="player"></div>
+    </div>
+    <div id="points">Points: 0</div>
+    <div id="hearts">❤️❤️❤️❤️❤️</div>
+  </body>
+  <script>
+    const ballsDiv = document.getElementById("balls");
+
+    ballsPos = -100;
+    ballsDiv.style.top = ballsPos + "px";
+
+    const playerDiv = document.getElementById("player");
+
+    const ballsSliding = setInterval(() => {
+      ballsPos++;
+      ballsDiv.style.top = ballsPos + "px";
+      if (ballsPos >= 50) {
+        clearInterval(ballsSliding);
+        playerDiv.style.display = "block";
+        setInterval(ballFall, 2000);
+      }
+    }, 5);
+
+    const colors = ["rgb(255, 204, 0)", "rgb(17, 5, 217)", "rgb(166, 0, 255)"];
+
+    const randomColorFrom3 = () => {
+      const rand = Math.floor(Math.random() * 3);
+      return colors[rand];
+    };
+
+    const ballsArray = [];
+    for (let i = 0; i < 9; i++) {
+      ballsArray.push(3);
+      for (let j = 0; j < 3; j++) {
+        const ballDiv = document.createElement("div");
+        ballDiv.className = "ball";
+        ballDiv.id = "pos-" + i + "-" + j;
+        ballDiv.style.left = i * 40 + "px";
+        ballDiv.style.top = j * 40 + "px";
+        ballDiv.style.backgroundColor = randomColorFrom3();
+        ballsDiv.append(ballDiv);
+      }
+    }
+
+    let ballColor = "";
+
+    const playerAreaDiv = document.getElementById("player-area");
+    playerAreaDiv.addEventListener("mousemove", playerMove);
+
+    let playerPos = 0;
+
+    function playerMove(e) {
+      playerPos = e.clientX - 65;
+      if (playerPos > 0 && playerPos < 340) {
+        playerDiv.style.left = playerPos + "px";
+      }
+    }
+
+    let ballsOnHead = 0;
+
+    function ballFall() {
+      const randomColumn = Math.floor(Math.random() * 8);
+
+      if (ballsArray[randomColumn] <= 0) {
+        ballFall();
+        return;
+      }
+
+      const lastBall = ballsArray[randomColumn]-- - 1;
+
+      const ballDiv = document.getElementById(
+        "pos-" + randomColumn + "-" + lastBall
+      );
+
+      let ballPosX = parseInt(ballDiv.style.left);
+      let ballPosY = parseInt(ballDiv.style.top);
+
+      const randomLeft = Math.floor(Math.random() * 20);
+      const minusOrPlus = Math.floor(Math.random() * 3) - 1;
+
+      const ballFalling = setInterval(() => {
+        ballPosY++;
+        ballDiv.style.top = ballPosY + "px";
+
+        ballColor = ballDiv.style.backgroundColor;
+
+        if (ballPosY % randomLeft == 0) {
+          ballPosX += minusOrPlus;
+          ballDiv.style.left = ballPosX + "px";
+        }
+
+        if (ballPosY > 370) {
+          const abs = Math.abs(playerPos - ballPosX);
+
+          if (abs < 30) {
+            clearInterval(ballFalling);
+            ballDiv.style.display = "none";
+            addPoint();
+
+            ballsOnHead++;
+
+            renderBallsOnHead();
+
+            if (ballsOnHead >= 5) {
+            }
+          }
+        }
+
+        if (ballPosY > 410) {
+          clearInterval(ballFalling);
+          ballDiv.style.display = "none";
+          removeHeart();
+        }
+      }, 5);
+    }
+
+    let points = 0;
+    const pointsDiv = document.getElementById("points");
+
+    function renderBallsOnHead() {
+      if (ballsOnHead >= 5) {
+        ballsOnHead = 0;
+        playerDiv.replaceChildren();
+        return;
+      }
+
+      const ballOnHead = document.createElement("div");
+      ballOnHead.className = "ball-on-head";
+      ballOnHead.style.top = -20 * ballsOnHead + "px";
+      ballOnHead.style.backgroundColor = ballColor;
+      playerDiv.append(ballOnHead);
+    }
+
+    function addPoint() {
+      points++;
+      pointsDiv.textContent = "Points: " + points;
+    }
+
+    let hearts = 5;
+    const heartsDiv = document.getElementById("hearts");
+    function removeHeart() {
+      hearts--;
+
+      let heartsText = "";
+
+      switch (hearts) {
+        case 1: {
+          heartsText = "❤️";
+          break;
+        }
+        case 2: {
+          heartsText = "❤️❤️";
+          break;
+        }
+        case 3: {
+          heartsText = "❤️❤️❤️";
+          break;
+        }
+        case 4: {
+          heartsText = "❤️❤️❤️❤️";
+          break;
+        }
+      }
+
+      heartsDiv.textContent = heartsText;
+    }
+  </script>
+</html>

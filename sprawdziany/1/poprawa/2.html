@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .box {
+        width: 50px;
+        height: 50px;
+        background: lightsalmon;
+        margin: 10px;
+        line-height: 50px;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <input id="input" />
+    <button id="btn" onclick="ok()">OK</button>
+    <div id="board"></div>
+  </body>
+  <script>
+    function ok() {
+      const text = document.getElementById("input").value;
+      if (!text) {
+        alert("Wprowadź tekst");
+        return;
+      }
+      const zdanie = text.trim().split(" ");
+
+      function shuffle(array) {
+        const shuffled = [];
+
+        const length = array.length;
+
+        for (let i = 0; i < length; i++) {
+          const random = Math.floor(Math.random() * array.length);
+
+          shuffled.push(array[random]);
+          array.splice(random, 1);
+        }
+
+        return shuffled;
+      }
+
+      const zdanieShuffled = shuffle(Array.from(zdanie));
+
+      let values = [];
+      for (let i = 0; i < zdanieShuffled.length; i++) {
+        values.push(0);
+      }
+
+      function sprawdzKolejnosc() {
+        for (let i = 0; i < zdanieShuffled.length; i++) {
+          const boxContent = document
+            .getElementById("box-" + i)
+            .textContent.split(" ")[1];
+
+          console.log("content", boxContent);
+          console.log("zdanie", zdanie[values[i] - 1]);
+
+          if (zdanie[values[i] - 1] == undefined || boxContent == undefined) {
+            console.log("undef");
+            return;
+          }
+          if (zdanie[values[i] - 1] != boxContent) {
+            console.log("return");
+            return;
+          }
+
+          console.log("dobrze");
+        }
+      }
+
+      function boxClick(el) {
+        const id = el.target.id;
+        const index = id.split("-")[1];
+        values[index]++;
+        const value = values[index];
+
+        const box = document.getElementById(id);
+
+        if (value > zdanieShuffled.length) {
+          values[index] = 1;
+          box.textContent = "[1] " + zdanieShuffled[index];
+        } else {
+          box.textContent = "[" + value + "] " + zdanieShuffled[index];
+        }
+
+        sprawdzKolejnosc();
+      }
+
+      const board = document.getElementById("board");
+      for (let i = 0; i < zdanieShuffled.length; i++) {
+        const box = document.createElement("div");
+        box.className = "box";
+        box.textContent = zdanieShuffled[i];
+        box.id = "box-" + i;
+        box.addEventListener("click", boxClick);
+        board.appendChild(box);
+      }
+    }
+  </script>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      body {
+        display: grid;
+        grid-template-columns: repeat(8, 40px);
+        gap: 10px;
+      }
+
+      .box {
+        background: lightblue;
+        width: 40px;
+        height: 40px;
+      }
+
+      .color {
+        background: lightcoral;
+      }
+    </style>
+  </head>
+  <body id="body"></body>
+  <script>
+    const body = document.getElementById("body");
+
+    function over(el) {
+      const id = el.target.id;
+      console.log("id", id);
+      boxMiddle = document.getElementById(id);
+      try {
+        boxMiddle.className = "color";
+      } catch (e) {}
+
+      const idUp = "box-" + (parseInt(id.charAt(4)) - 1) + "-" + id.charAt(6);
+      const boxUp = document.getElementById(idUp);
+      try {
+        boxUp.className = "color";
+      } catch (e) {}
+
+      const idRight =
+        "box-" + id.charAt(4) + "-" + (parseInt(id.charAt(6)) - 1);
+      const boxRight = document.getElementById(idRight);
+      try {
+        boxRight.className = "color";
+      } catch (e) {}
+
+      const idDown = "box-" + (parseInt(id.charAt(4)) + 1) + "-" + id.charAt(6);
+      const boxDown = document.getElementById(idDown);
+      try {
+        boxDown.className = "color";
+      } catch (e) {}
+
+      const idLeft = "box-" + id.charAt(4) + "-" + (parseInt(id.charAt(6)) + 1);
+      const boxLeft = document.getElementById(idLeft);
+      try {
+        boxLeft.className = "color";
+      } catch (e) {}
+    }
+
+    function leave(el) {
+      const id = el.target.id;
+      boxMiddle = document.getElementById(id);
+      try {
+        boxMiddle.className = "box";
+      } catch (e) {}
+
+      const idUp = "box-" + (parseInt(id.charAt(4)) - 1) + "-" + id.charAt(6);
+      const boxUp = document.getElementById(idUp);
+      try {
+        boxUp.className = "box";
+      } catch (e) {}
+
+      const idRight =
+        "box-" + id.charAt(4) + "-" + (parseInt(id.charAt(6)) - 1);
+      const boxRight = document.getElementById(idRight);
+      try {
+        boxRight.className = "box";
+      } catch (e) {}
+
+      const idDown = "box-" + (parseInt(id.charAt(4)) + 1) + "-" + id.charAt(6);
+      const boxDown = document.getElementById(idDown);
+      try {
+        boxDown.className = "box";
+      } catch (e) {}
+
+      const idLeft = "box-" + id.charAt(4) + "-" + (parseInt(id.charAt(6)) + 1);
+      const boxLeft = document.getElementById(idLeft);
+      try {
+        boxLeft.className = "box";
+      } catch (e) {}
+    }
+
+    for (let i = 0; i < 8; i++) {
+      for (let j = 0; j < 8; j++) {
+        const box = document.createElement("div");
+
+        box.className = "box";
+        box.id = "box-" + i + "-" + j;
+        box.addEventListener("mouseover", over);
+        box.addEventListener("mouseleave", leave);
+        body.appendChild(box);
+      }
+    }
+  </script>
+</html>
