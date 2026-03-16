@@ -68,3 +68,13 @@ body {
   text-transform: uppercase;
   padding: 5px;
 }
+
+.intro-img {
+  width: 100%;
+  margin-bottom: 10px;
+  transition: opacity 1s ease-in-out;
+}
+
+.hidden {
+  opacity: 0;
+}

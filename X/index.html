@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -10,8 +10,14 @@
     <div id="game-window">
       <div id="game-window-controls">
         <h1>Dratewka the Shoemaker</h1>
+        <audio id="audio-intro" src="./assets/intro.mp3"></audio>
       </div>
       <div id="game-window-content">
+        <div>
+          <img src="./assets/czolowka/czolowka.jpg" class="intro-img" id="czolowka" />
+          <img src="./assets/czolowka/opis_A.jpg" class="intro-img" id="opis_A" style="display: none" />
+          <img src="./assets/czolowka/opis_B.jpg" class="intro-img" id="opis_B" style="display: none" />
+        </div>
         <p id="location-desc"></p>
         <div id="gfx">
           <img id="gfx-img" />
@@ -29,6 +35,15 @@
   <script type="module">
     import { Game } from './scripts/game.js';
     const game = new Game();
-    game.start();
+
+    const skipIntro = false;
+
+    if (skipIntro) {
+      document.getElementById('czolowka').style.display = 'none';
+      game.start();
+    } else {
+      await game.intro();
+      game.start();
+    }
   </script>
 </html>
