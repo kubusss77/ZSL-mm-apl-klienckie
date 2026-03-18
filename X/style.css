@@ -38,10 +38,30 @@ body {
   padding: 20px;
 }
 
+#gfx {
+  display: flex;
+}
+
 #gfx-img {
   margin: 5px;
   border: 2px solid;
-  width: 256px;
+  height: 192px;
+}
+
+#div-compass {
+  position: relative;
+  height: 192px;
+}
+
+#gfx-compass {
+  margin-top: 48px;
+  margin-left: 32px;
+  width: 240px
+}
+
+.compass-directions {
+  position: absolute;
+  top: 0;
 }
 
 #game-window-content p {

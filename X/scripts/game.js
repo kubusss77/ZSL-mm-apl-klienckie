@@ -8,17 +8,23 @@ export class Game {
     this.location = null;
     this.itemsManager = null;
     document.getElementById('user-input').addEventListener('keydown', this.handleUserInput.bind(this));
+    document.getElementById('user-input').addEventListener('blur', function(e) {
+      setTimeout(() => {
+        this.focus()
+      })
+    })
   }
 
   start() {
     this.itemsManager = new Items();
     this.location = new Location(7, 4, this.itemsManager);
 
+    document.getElementById('intro-text').style.display = 'none';
     this.updateUI();
   }
 
   async intro() {
-    document.getElementById('location-desc').textContent = 'Click any key to start...';
+    document.getElementById('location-desc').style.display = 'none';
     document.getElementById('gfx').style.display = 'none';
     document.getElementById('available-paths').style.display = 'none';
     document.getElementById('visible-items').style.display = 'none';
@@ -89,14 +95,28 @@ export class Game {
     gfxImg.src = `assets/img/${this.location.img}`;
     gfxImg.style.backgroundColor = this.location.color;
     gfxImg.style.borderColor = this.location.color;
+
+    const allowedPaths = this.location.paths();
+    const allPaths = ['N', 'E', 'S', 'W']
+    for (const p of allPaths) {
+      const el = document.getElementById('compass-' + p.toLowerCase())
+      if(allowedPaths.includes(p)) {
+        el.style.display = 'block'
+      } else {
+        el.style.display = 'none'
+      }
+    }
   }
 
   handleUserInput(e) {
     const inputText = e.target.value.trim().toUpperCase();
 
     if (e.key.length > 1) {
-      console.log('invalid key');
       e.preventDefault();
+    }
+
+    if(e.key === 'Backspace') {
+      e.target.value = e.target.value.slice(0, -1);
     }
 
     if (e.key !== 'Enter') return;
@@ -365,7 +385,7 @@ export class Game {
       this.location.go(path);
       setTimeout(() => {
         this.updateUI();
-      }, 1000);
+      }, 500);
     } catch (error) {
       if (error.message === 'PATH_UNAVAILABLE') {
         locDesc.textContent = "You can\'t go that way";

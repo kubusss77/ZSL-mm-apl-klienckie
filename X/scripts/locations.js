@@ -69,7 +69,7 @@ class Location {
     return this.y * 10 + this.x;
   }
 
-  #paths() {
+  paths() {
     const loc = locations[this.id];
     if (!loc) return [];
     let pathList = [...loc.paths];
@@ -83,7 +83,7 @@ class Location {
   }
 
   get availablePaths() {
-    return this.#paths().map(Location.fullPathName).join(', ');
+    return this.paths().map(Location.fullPathName).join(', ');
   }
 
   get desc() {
@@ -106,7 +106,7 @@ class Location {
   }
 
   go(path) {
-    if (!this.#paths().includes(path)) {
+    if (!this.paths().includes(path)) {
       throw new Error('PATH_UNAVAILABLE');
     }
 

@@ -17,10 +17,18 @@
           <img src="./assets/czolowka/czolowka.jpg" class="intro-img" id="czolowka" />
           <img src="./assets/czolowka/opis_A.jpg" class="intro-img" id="opis_A" style="display: none" />
           <img src="./assets/czolowka/opis_B.jpg" class="intro-img" id="opis_B" style="display: none" />
+          <p id="intro-text">Click any key to start</p>
         </div>
         <p id="location-desc"></p>
         <div id="gfx">
           <img id="gfx-img" />
+          <div id="div-compass">
+            <img id="gfx-compass" src="./assets/kompas.png">
+            <p id="compass-n" class="compass-directions" style="top: 30px; left: 135px;">N</p>
+            <p id="compass-e" class="compass-directions" style="top: 88px; left: 270px;">E</p>
+            <p id="compass-s" class="compass-directions" style="top: 150px; left: 140px;">S</p>
+            <p id="compass-w" class="compass-directions" style="top: 88px; left: 16px;">W</p>
+          </div>
         </div>
         <p id="available-paths"></p>
         <p id="visible-items"></p>
@@ -36,7 +44,7 @@
     import { Game } from './scripts/game.js';
     const game = new Game();
 
-    const skipIntro = false;
+    const skipIntro = true;
 
     if (skipIntro) {
       document.getElementById('czolowka').style.display = 'none';
