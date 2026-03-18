@@ -23,11 +23,11 @@
         <div id="gfx">
           <img id="gfx-img" />
           <div id="div-compass">
-            <img id="gfx-compass" src="./assets/kompas.png">
-            <p id="compass-n" class="compass-directions" style="top: 30px; left: 135px;">N</p>
-            <p id="compass-e" class="compass-directions" style="top: 88px; left: 270px;">E</p>
-            <p id="compass-s" class="compass-directions" style="top: 150px; left: 140px;">S</p>
-            <p id="compass-w" class="compass-directions" style="top: 88px; left: 16px;">W</p>
+            <img id="gfx-compass" src="./assets/kompas.png" />
+            <p id="compass-n" class="compass-directions" style="top: 30px; left: 135px">N</p>
+            <p id="compass-e" class="compass-directions" style="top: 88px; left: 270px">E</p>
+            <p id="compass-s" class="compass-directions" style="top: 150px; left: 140px">S</p>
+            <p id="compass-w" class="compass-directions" style="top: 88px; left: 16px">W</p>
           </div>
         </div>
         <p id="available-paths"></p>
@@ -44,7 +44,8 @@
     import { Game } from './scripts/game.js';
     const game = new Game();
 
-    const skipIntro = true;
+    // Skipuje czolowke, opis_A i opis_b
+    const skipIntro = false;
 
     if (skipIntro) {
       document.getElementById('czolowka').style.display = 'none';

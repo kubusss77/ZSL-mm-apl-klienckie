@@ -3,19 +3,26 @@ import Items, { items, itemDependencies } from './items.js';
 
 const allowedDirections = ['N', 'E', 'S', 'W', 'NORTH', 'EAST', 'SOUTH', 'WEST'];
 
+function wait(time) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, time);
+  });
+}
+
 export class Game {
   constructor() {
     this.location = null;
     this.itemsManager = null;
     document.getElementById('user-input').addEventListener('keydown', this.handleUserInput.bind(this));
-    document.getElementById('user-input').addEventListener('blur', function(e) {
+    document.getElementById('user-input').addEventListener('blur', function (e) {
       setTimeout(() => {
-        this.focus()
-      })
-    })
+        this.focus();
+      });
+    });
   }
 
   start() {
+    console.log('start');
     this.itemsManager = new Items();
     this.location = new Location(7, 4, this.itemsManager);
 
@@ -24,7 +31,7 @@ export class Game {
   }
 
   async intro() {
-    document.getElementById('location-desc').style.display = 'none';
+    console.log('intro');
     document.getElementById('gfx').style.display = 'none';
     document.getElementById('available-paths').style.display = 'none';
     document.getElementById('visible-items').style.display = 'none';
@@ -35,7 +42,7 @@ export class Game {
       'keydown',
       async () => {
         document.getElementById('audio-intro').play();
-        document.getElementById('location-desc').style.display = 'none';
+        //document.getElementById('location-desc').style.display = 'none';
 
         await wait(5000);
         document.getElementById('czolowka').style.opacity = '0';
@@ -73,12 +80,6 @@ export class Game {
       },
       { once: true }
     );
-
-    function wait(time) {
-      return new Promise((resolve) => {
-        setTimeout(resolve, time);
-      });
-    }
   }
 
   updateUI() {
@@ -97,13 +98,13 @@ export class Game {
     gfxImg.style.borderColor = this.location.color;
 
     const allowedPaths = this.location.paths();
-    const allPaths = ['N', 'E', 'S', 'W']
+    const allPaths = ['N', 'E', 'S', 'W'];
     for (const p of allPaths) {
-      const el = document.getElementById('compass-' + p.toLowerCase())
-      if(allowedPaths.includes(p)) {
-        el.style.display = 'block'
+      const el = document.getElementById('compass-' + p.toLowerCase());
+      if (allowedPaths.includes(p)) {
+        el.style.display = 'block';
       } else {
-        el.style.display = 'none'
+        el.style.display = 'none';
       }
     }
   }
@@ -115,7 +116,7 @@ export class Game {
       e.preventDefault();
     }
 
-    if(e.key === 'Backspace') {
+    if (e.key === 'Backspace') {
       e.target.value = e.target.value.slice(0, -1);
     }
 
