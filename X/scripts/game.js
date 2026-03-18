@@ -13,7 +13,7 @@ export class Game {
   constructor() {
     this.location = null;
     this.itemsManager = null;
-    document.getElementById('user-input').addEventListener('keydown', this.handleUserInput.bind(this));
+    document.querySelector('body').addEventListener('keydown', this.handleUserInput.bind(this));
     document.getElementById('user-input').addEventListener('blur', function (e) {
       setTimeout(() => {
         this.focus();
@@ -26,12 +26,12 @@ export class Game {
     this.itemsManager = new Items();
     this.location = new Location(7, 4, this.itemsManager);
 
-    document.getElementById('intro-text').style.display = 'none';
     this.updateUI();
   }
 
   async intro() {
     console.log('intro');
+    document.getElementById('location-desc').style.display = 'none';
     document.getElementById('gfx').style.display = 'none';
     document.getElementById('available-paths').style.display = 'none';
     document.getElementById('visible-items').style.display = 'none';
@@ -42,7 +42,7 @@ export class Game {
       'keydown',
       async () => {
         document.getElementById('audio-intro').play();
-        //document.getElementById('location-desc').style.display = 'none';
+        document.getElementById('intro-text').style.display = 'none';
 
         await wait(5000);
         document.getElementById('czolowka').style.opacity = '0';
@@ -77,6 +77,8 @@ export class Game {
         document.getElementById('visible-items').style.display = 'block';
         document.getElementById('carried-item').style.display = 'block';
         document.getElementById('what-now').style.display = 'block';
+
+        this.start();
       },
       { once: true }
     );
@@ -110,6 +112,7 @@ export class Game {
   }
 
   handleUserInput(e) {
+    document.getElementById('user-input').focus();
     const inputText = e.target.value.trim().toUpperCase();
 
     if (e.key.length > 1) {
