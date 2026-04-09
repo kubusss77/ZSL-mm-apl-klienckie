@@ -13,7 +13,7 @@ body {
 }
 
 #game-window {
-  width: 800px;
+  width: 660px;
   margin: 50px auto;
   border: 5px solid #eee;
   border-radius: 10px;
@@ -35,19 +35,43 @@ body {
 
 #game-window-content {
   width: 100%;
-  padding: 5px;
+  padding: 20px;
+}
+
+#gfx {
+  display: flex;
 }
 
 #gfx-img {
   margin: 5px;
-  border: 3px solid #eee;
-  width: 384px;
+  border: 2px solid;
+  height: 192px;
+}
+
+#div-compass {
+  position: relative;
+  height: 192px;
+}
+
+#gfx-compass {
+  margin-top: 48px;
+  margin-left: 32px;
+  width: 240px
+}
+
+.compass-directions {
+  position: absolute;
+  top: 0;
 }
 
 #game-window-content p {
   font-family: 'PressStart2P', 'Courier New', Courier, monospace;
   color: #eee;
-  padding: 5px;
+  margin: 5px;
+}
+
+#available-paths {
+  line-height: 24px;
 }
 
 #what-now {
@@ -63,4 +87,14 @@ body {
   font-size: 16px;
   text-transform: uppercase;
   padding: 5px;
+}
+
+.intro-img {
+  width: 100%;
+  margin-bottom: 10px;
+  transition: opacity 1s ease-in-out;
+}
+
+.hidden {
+  opacity: 0;
 }
