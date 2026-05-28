@@ -1,0 +1,16 @@
+<div>
+  @for (mode of modes; track mode.index) {
+    <button (click)="chooseMode(mode.index, $event)" [disabled]="status === 'running'">
+      {{ mode.name }} - {{ mode.time }} min - {{ mode.temp }} C
+    </button>
+  }
+</div>
+
+<h3>Wybrano program: {{ getMode()?.name }}</h3>
+<p>Temperatura: {{ getMode()?.temp }}</p>
+
+<button (click)="startPranie()">Start</button>
+
+@if (status === 'running') {
+  <p class="warning">UWAGA: Blokada drzwi aktywna!</p>
+}

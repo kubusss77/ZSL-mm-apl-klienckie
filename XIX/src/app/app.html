@@ -1,0 +1,37 @@
+<img
+  #myImg
+  (click)="myImg.width += 20"
+  [src]="photoUrl"
+  [width]="photoWidth"
+  (mouseover)="statusText = 'Widzisz zdjęcie!'"
+  (mouseout)="statusText = 'Myszka uciekła'"
+/>
+
+{{ statusText }}
+
+<div class="div1" [style.backgroundColor]="lightColor"></div>
+
+<button [disabled]="isLocked">Przycisk</button>
+
+<button (click)="changeColor()">Zmień kolor</button>
+
+<input (input)="onInput($event)" />
+
+<h1>{{ userTyped }}</h1>
+
+<input #myInput (input)="(0)" />
+<p>{{ myInput.value.length }}</p>
+
+<input #source (input)="(0)" />
+
+<input [value]="source.value" />
+
+<input #cleaner (input)="(0)" />
+
+<h2>{{ cleaner.value }}</h2>
+
+<button (click)="cleaner.value = ''">Wyczyść wszystko</button>
+
+<h1>Master Chanllenge</h1>
+
+<app-mc></app-mc>

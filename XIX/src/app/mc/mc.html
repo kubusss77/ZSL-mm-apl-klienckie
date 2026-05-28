@@ -1,0 +1,22 @@
+<p>mc works!</p>
+
+<input type="number" #button />
+
+<button (click)="(0)">Ustaw postęp</button>
+
+<div class="container">
+  <div
+    class="progress"
+    [style.width.%]="button.value"
+    [style.backgroundColor]="button.valueAsNumber > 100 ? 'red' : 'lightgreen'"
+  ></div>
+</div>
+
+<br />
+
+<button (click)="color = 'aqua'">Błękit</button>
+<button (click)="color = 'green'">Zieleń</button>
+<button (click)="color = 'gold'">Złoto</button>
+
+<textarea #text (input)="(0)"></textarea>
+<div [style.backgroundColor]="color">{{ text.value }}</div>

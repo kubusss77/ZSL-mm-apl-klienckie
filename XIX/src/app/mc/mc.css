@@ -1,0 +1,14 @@
+.container {
+  width: 100%;
+  background-color: #f0f0f0;
+  height: 30px;
+  border: 1px solid #ccc;
+  margin-top: 10px;
+}
+
+.progress {
+  height: 100%;
+  transition:
+    width 0.3s ease,
+    background-color 0.3s ease;
+}

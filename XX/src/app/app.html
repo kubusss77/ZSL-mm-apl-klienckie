@@ -1,0 +1,11 @@
+<h2>{{ czas() | date: 'medium' }}</h2>
+
+<p>Wpisz zarobki z poprzedniego roku:</p>
+<input type="password" (input)="wpiszZarobki($event.target.value)" />
+<p>EUR</p>
+
+@if (zarobki()) {
+  <p>I tak widzimy, że twoje zarobki to: {{ zarobki() | currency }}</p>
+}
+
+@if (zarobki() === 666.666) {}
