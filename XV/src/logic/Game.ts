@@ -420,24 +420,25 @@ export class Game implements Updatable {
       horizontal: nextRotation === 0 || nextRotation === 2,
     };
 
-    const shifted = this.keepPairInsideHorizontalBounds(rotated);
-    return Math.min(shifted.r1, shifted.r2) < 0 ? null : shifted;
+    return Math.min(rotated.r1, rotated.r2) < 0 ? null : rotated;
   }
 
   /**
-   * Próbuje obrócić kapsułkę, a przy kolizji odsuwa ją o jedno pole w bok.
+   * Próbuje obrócić kapsułkę
    */
   private findRotatedPairWithKick(pair: PillPair, nextRotation: number): PillPair | null {
-    const rotated = this.buildRotatedPair(pair, nextRotation);
-    if (!rotated) return null;
+    const rawRotation = this.buildRotatedPair(pair, nextRotation);
+    if (!rawRotation) return null;
 
-    const testedPlacements = new Set<string>();
-    for (const colDelta of this.rotationKickOffsets(rotated)) {
-      const candidate = this.keepPairInsideHorizontalBounds(this.offsetPair(rotated, 0, colDelta));
-      const key = `${candidate.r1}:${candidate.c1}:${candidate.r2}:${candidate.c2}`;
-      if (testedPlacements.has(key)) continue;
+    const wallAdjusted = this.keepPairInsideHorizontalBounds(rawRotation);
+    const usedWallKick = !this.hasSamePlacement(rawRotation, wallAdjusted);
 
-      testedPlacements.add(key);
+    if (this.canPlacePair(wallAdjusted)) return wallAdjusted;
+    if (usedWallKick) return null;
+
+    for (const colDelta of this.rotationKickOffsets(wallAdjusted)) {
+      const candidate = this.offsetPair(wallAdjusted, 0, colDelta);
+      if (!this.isPairInsideHorizontalBounds(candidate)) continue;
       if (this.canPlacePair(candidate)) return candidate;
     }
 
@@ -447,10 +448,10 @@ export class Game implements Updatable {
   private rotationKickOffsets(pair: PillPair): number[] {
     const blockedSides = this.findBlockedHorizontalSides(pair);
 
-    if (blockedSides.right && !blockedSides.left) return [0, -1, 1, -2, 2];
-    if (blockedSides.left && !blockedSides.right) return [0, 1, -1, 2, -2];
+    if (blockedSides.right && !blockedSides.left) return [-1];
+    if (blockedSides.left && !blockedSides.right) return [1];
 
-    return [0, -1, 1, -2, 2];
+    return [];
   }
 
   private findBlockedHorizontalSides(pair: PillPair): { left: boolean; right: boolean } {
@@ -491,6 +492,14 @@ export class Game implements Updatable {
     if (maxCol >= this.board.cols) return this.offsetPair(pair, 0, this.board.cols - maxCol - 1);
 
     return pair;
+  }
+
+  private isPairInsideHorizontalBounds(pair: PillPair): boolean {
+    return pair.c1 >= 0 && pair.c1 < this.board.cols && pair.c2 >= 0 && pair.c2 < this.board.cols;
+  }
+
+  private hasSamePlacement(left: PillPair, right: PillPair): boolean {
+    return left.r1 === right.r1 && left.c1 === right.c1 && left.r2 === right.r2 && left.c2 === right.c2;
   }
 
   private isFastDropKey(event: KeyboardEvent): boolean {
