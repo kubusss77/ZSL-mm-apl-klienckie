@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="author" content="Jakub Szczepa 4Ib" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Dr Mario - Jakub Szczepa</title>
+  </head>
+  <body>
+    <div id="game-wrapper">
+      <canvas id="board"></canvas>
+
+      <div id="hud-top" class="digit-counter">0000000</div>
+      <div id="hud-score" class="digit-counter">0000000</div>
+      <div id="hud-virus" class="digit-counter">04</div>
+
+      <div id="game-animation-container">
+        <div id="previewBox"></div>
+
+        <div id="handBox">
+          <img id="rekaCzesc1" class="hand" />
+          <img id="rekaCzesc2" class="hand" />
+          <img id="rekaCzesc3" class="hand" />
+          <img id="rekaCzesc4" class="hand" />
+        </div>
+
+        <div id="lupaBox"></div>
+      </div>
+
+      <div id="screen-gameover" class="screen-overlay is-hidden">
+        <img src="assets/img/go.png" alt="Game Over" />
+      </div>
+      <div id="screen-stagecomplete" class="screen-overlay is-hidden">
+        <img src="assets/img/sc.png" alt="Stage Complete" />
+      </div>
+      <img id="doctor-tpose" src="assets/img/go_dr.png" alt="Doctor t-pose" class="is-hidden" />
+    </div>
+  </body>
+  <script src="./dist/index.bundle.js"></script>
+</html>

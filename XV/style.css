@@ -1,0 +1,136 @@
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #000;
+}
+
+#game-wrapper {
+    position: relative;
+    width: 1400px;
+    height: 900px;
+    background-image: url("assets/img/pf.png");
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    overflow: hidden;
+}
+
+#board {
+    position: absolute;
+    top: 24px;
+    left: -34px;
+    image-rendering: pixelated;
+    display: block;
+    width: 1170px;
+}
+
+#hud-top,
+#hud-score,
+#hud-virus {
+    position: absolute;
+    font-family: monospace;
+    font-size: 16px;
+    font-weight: bold;
+    color: black;
+    user-select: none;
+}
+
+#hud-top { top: 185px; left: 160px; }
+#hud-score { top: 300px; left: 160px; }
+#hud-virus { top: 785px; left: 1230px; }
+
+.digit-counter {
+    display: flex;
+    flex-direction: row;
+    gap: 0px;
+}
+
+.digit-counter img {
+    width: 38px;  
+    height: 40px; 
+    image-rendering: pixelated;
+}
+
+#game-animation-container {
+    position: absolute;
+    top: 2px;
+    left: -55px;
+    width: 512px;
+    height: 448px;
+    transform: scale(2.34375);
+    transform-origin: top left;
+    pointer-events: none;
+}
+
+#game-animation-container #lupaBox img {
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    transform: scale(0.5);
+    transform-origin: top left;
+}
+
+#previewBox {
+    position: absolute;
+    display: flex;
+    top: 40px;
+    left: 470px;
+}
+
+.hand{
+    position: absolute;
+    display: none;
+}
+
+#handBox {
+    position: absolute;
+    top: 65px;
+    left: 446px;
+    width: 90px;
+    height: 90px;
+}
+
+#handBox img {
+    width: 17px;
+    height: 20px;
+    image-rendering: pixelated;
+}
+
+#lupaBox {
+    position: absolute;
+    top: 210px;
+    left: 50px;
+}
+
+.screen-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 14px;
+    background: rgba(0, 0, 0, 0.35);
+    pointer-events: none;
+}
+
+.screen-overlay img {
+    width: 360px;
+    image-rendering: pixelated;
+}
+
+.is-hidden {
+    display: none;
+}
+
+#doctor-tpose {
+    position: absolute;
+    left: 1037px;
+    top: 95px;
+    width: 260px;
+    height: 280px;
+    image-rendering: pixelated;
+    pointer-events: none;
+}
