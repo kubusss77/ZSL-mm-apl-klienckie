@@ -1,7 +1,13 @@
-import Location from './locations.js';
+import Location, { locations } from './locations.js';
 import Items, { items, itemDependencies } from './items.js';
 
 const allowedDirections = ['N', 'E', 'S', 'W', 'NORTH', 'EAST', 'SOUTH', 'WEST'];
+const mapDirections = {
+  N: { dx: 0, dy: -1 },
+  E: { dx: 1, dy: 0 },
+  S: { dx: 0, dy: 1 },
+  W: { dx: -1, dy: 0 },
+};
 
 function wait(time) {
   return new Promise((resolve) => {
@@ -13,12 +19,15 @@ export class Game {
   constructor() {
     this.location = null;
     this.itemsManager = null;
+    this.mapOpen = false;
+    this.godMode = false;
     document.querySelector('body').addEventListener('keydown', this.handleUserInput.bind(this));
     document.getElementById('user-input').addEventListener('blur', function (e) {
       setTimeout(() => {
         this.focus();
       });
     });
+    this.setupMap();
   }
 
   start() {
@@ -109,23 +118,345 @@ export class Game {
         el.style.display = 'none';
       }
     }
+
+    this.updateMapCurrentLocation();
+    this.updateMapTileDetails();
+  }
+
+  setupMap() {
+    const map = document.getElementById('location-map');
+    const toggle = document.getElementById('map-toggle');
+    const close = document.getElementById('map-close');
+    const overlay = document.getElementById('map-overlay');
+    const godModeToggle = document.getElementById('godmode-toggle');
+
+    if (!map || !toggle || !close || !overlay || !godModeToggle) return;
+
+    this.renderMap(map);
+
+    toggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.toggleMap();
+    });
+
+    close.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.hideMap();
+    });
+
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) {
+        this.hideMap();
+      }
+    });
+
+    godModeToggle.addEventListener('change', () => {
+      this.setGodMode(godModeToggle.checked);
+    });
+  }
+
+  renderMap(map) {
+    const locationEntries = Object.entries(locations).map(([id, location]) => {
+      const numericId = Number(id);
+      return {
+        id: numericId,
+        x: numericId % 10,
+        y: Math.floor(numericId / 10),
+        location,
+      };
+    });
+
+    const xs = locationEntries.map(({ x }) => x);
+    const ys = locationEntries.map(({ y }) => y);
+    const minX = Math.min(...xs);
+    const maxX = Math.max(...xs);
+    const minY = Math.min(...ys);
+    const maxY = Math.max(...ys);
+    const locationsById = new Map(locationEntries.map((entry) => [entry.id, entry]));
+
+    map.style.gridTemplateColumns = `repeat(${maxX - minX + 1}, var(--map-tile-width))`;
+    map.replaceChildren();
+
+    for (let y = minY; y <= maxY; y++) {
+      for (let x = minX; x <= maxX; x++) {
+        const id = y * 10 + x;
+        const entry = locationsById.get(id);
+
+        if (!entry) {
+          const emptyTile = document.createElement('div');
+          emptyTile.className = 'map-empty';
+          map.appendChild(emptyTile);
+          continue;
+        }
+
+        map.appendChild(this.createMapTile(entry, locationsById));
+      }
+    }
+  }
+
+  createMapTile({ id, x, y, location }, locationsById) {
+    const tile = document.createElement('button');
+    tile.type = 'button';
+    tile.className = 'map-tile';
+    tile.dataset.locationId = id;
+    tile.dataset.x = x;
+    tile.dataset.y = y;
+    tile.dataset.desc = location.desc;
+    tile.setAttribute('aria-label', location.desc);
+    tile.style.setProperty('--tile-color', location.color);
+
+    const img = document.createElement('img');
+    img.src = `assets/img/${location.img}`;
+    img.alt = location.desc;
+    tile.appendChild(img);
+
+    for (const path of location.paths) {
+      const direction = mapDirections[path];
+      const targetId = (y + direction.dy) * 10 + x + direction.dx;
+
+      if (locationsById.has(targetId)) {
+        const pathMarker = document.createElement('span');
+        pathMarker.className = `map-path ${path.toLowerCase()}`;
+        tile.appendChild(pathMarker);
+      }
+    }
+
+    const idLabel = document.createElement('span');
+    idLabel.className = 'map-location-id';
+    idLabel.textContent = id;
+    tile.appendChild(idLabel);
+
+    const godModeBadge = document.createElement('span');
+    godModeBadge.className = 'map-godmode-badge';
+    tile.appendChild(godModeBadge);
+
+    tile.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (this.godMode) {
+        this.teleportToLocation(x, y);
+      }
+      this.showMapTooltip(tile);
+    });
+
+    tile.addEventListener('mouseenter', () => {
+      this.showMapTooltip(tile);
+    });
+
+    tile.addEventListener('mousemove', () => {
+      this.positionMapTooltip(tile);
+    });
+
+    tile.addEventListener('mouseleave', () => {
+      this.hideMapTooltip();
+    });
+
+    tile.addEventListener('focus', () => {
+      this.showMapTooltip(tile);
+    });
+
+    tile.addEventListener('blur', () => {
+      this.hideMapTooltip();
+    });
+
+    return tile;
+  }
+
+  teleportToLocation(x, y) {
+    if (!this.location) return;
+
+    this.location.x = x;
+    this.location.y = y;
+    this.updateUI();
+    document.getElementById('user-input').focus();
+  }
+
+  toggleMap() {
+    if (this.mapOpen) {
+      this.hideMap();
+    } else {
+      this.showMap();
+    }
+  }
+
+  setGodMode(enabled) {
+    const overlay = document.getElementById('map-overlay');
+    const godModeToggle = document.getElementById('godmode-toggle');
+
+    this.godMode = enabled;
+    overlay.classList.toggle('godmode', enabled);
+    godModeToggle.checked = enabled;
+    this.updateMapTileDetails();
+  }
+
+  showMap() {
+    const overlay = document.getElementById('map-overlay');
+    const toggle = document.getElementById('map-toggle');
+
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden', 'false');
+    toggle.setAttribute('aria-expanded', 'true');
+    this.mapOpen = true;
+    document.getElementById('godmode-toggle').checked = this.godMode;
+    overlay.classList.toggle('godmode', this.godMode);
+    this.updateMapCurrentLocation();
+    this.updateMapTileDetails();
+  }
+
+  hideMap() {
+    const overlay = document.getElementById('map-overlay');
+    const toggle = document.getElementById('map-toggle');
+
+    overlay.classList.remove('open');
+    overlay.setAttribute('aria-hidden', 'true');
+    toggle.setAttribute('aria-expanded', 'false');
+    this.mapOpen = false;
+    this.hideMapTooltip();
+    document.getElementById('user-input').focus();
+  }
+
+  updateMapCurrentLocation() {
+    document.querySelectorAll('.map-tile.current').forEach((tile) => {
+      tile.classList.remove('current');
+    });
+
+    if (!this.location) return;
+
+    const currentTile = document.querySelector(`.map-tile[data-location-id="${this.location.id}"]`);
+    if (currentTile) {
+      currentTile.classList.add('current');
+    }
+  }
+
+  updateMapTileDetails() {
+    document.querySelectorAll('.map-tile').forEach((tile) => {
+      const locationId = Number(tile.dataset.locationId);
+      const location = locations[locationId];
+      const itemNames = this.itemsManager
+        ? this.itemsManager.getItemsAtLocation(locationId).map(Items.idToFullName).join(', ')
+        : '';
+      const itemsText = `Items: ${itemNames || 'nothing'}`;
+      const godModeEvents = this.getLocationGodModeEvents(locationId);
+      const godModeText = godModeEvents.length ? `Events:\n${godModeEvents.join('\n')}` : 'Events: nothing';
+      const img = tile.querySelector('img');
+      const godModeBadge = tile.querySelector('.map-godmode-badge');
+
+      tile.dataset.desc = location.desc;
+      tile.dataset.items = itemsText;
+      tile.dataset.godmode = godModeText;
+      tile.dataset.tooltip = this.godMode ? `${location.desc}\n${itemsText}\n${godModeText}` : `${location.desc}\n${itemsText}`;
+      tile.style.setProperty('--tile-color', location.color);
+      tile.setAttribute('aria-label', `${location.desc}. ${itemsText}`);
+      tile.classList.toggle('godmode-location', godModeEvents.length > 0);
+
+      if (godModeBadge) {
+        godModeBadge.textContent = godModeEvents.length;
+      }
+
+      if (img) {
+        img.src = `assets/img/${location.img}`;
+        img.alt = location.desc;
+      }
+    });
+
+    const activeTile = document.querySelector('.map-tile:hover, .map-tile:focus-visible');
+    if (activeTile && this.mapOpen) {
+      this.showMapTooltip(activeTile);
+    }
+  }
+
+  getLocationGodModeEvents(locationId) {
+    return Object.entries(itemDependencies)
+      .filter(([, dependency]) => dependency.location === locationId)
+      .map(([itemId, dependency]) => this.formatGodModeEvent(Number(itemId), dependency));
+  }
+
+  formatGodModeEvent(itemId, dependency) {
+    const sourceItem = items[itemId]?.name || `ITEM ${itemId}`;
+    const resultItem = items[dependency.resultId]?.aName || `item ${dependency.resultId}`;
+    const flags = [];
+
+    if (dependency.dragonRequired) {
+      flags.push('after dragon');
+    }
+    if (dependency.milestone) {
+      flags.push('sheep part');
+    }
+    if (dependency.winGame) {
+      flags.push('final');
+    }
+
+    return `USE ${sourceItem} -> ${resultItem}${flags.length ? ` (${flags.join(', ')})` : ''}`;
+  }
+
+  showMapTooltip(tile) {
+    const tooltip = document.getElementById('map-tooltip');
+    if (!tooltip || !this.mapOpen) return;
+
+    tooltip.textContent = tile.dataset.tooltip || tile.dataset.desc;
+    tooltip.classList.add('visible');
+    this.positionMapTooltip(tile);
+  }
+
+  positionMapTooltip(tile) {
+    const tooltip = document.getElementById('map-tooltip');
+    if (!tooltip || !tooltip.classList.contains('visible')) return;
+
+    const gap = 10;
+    const viewportPadding = 8;
+    const tileRect = tile.getBoundingClientRect();
+    const tooltipRect = tooltip.getBoundingClientRect();
+    let left = tileRect.left + tileRect.width / 2 - tooltipRect.width / 2;
+    let top = tileRect.top - tooltipRect.height - gap;
+
+    if (top < viewportPadding) {
+      top = tileRect.bottom + gap;
+    }
+
+    if (top + tooltipRect.height > window.innerHeight - viewportPadding) {
+      top = window.innerHeight - tooltipRect.height - viewportPadding;
+    }
+
+    left = Math.max(viewportPadding, Math.min(left, window.innerWidth - tooltipRect.width - viewportPadding));
+    top = Math.max(viewportPadding, top);
+
+    tooltip.style.left = `${left}px`;
+    tooltip.style.top = `${top}px`;
+  }
+
+  hideMapTooltip() {
+    const tooltip = document.getElementById('map-tooltip');
+    if (!tooltip) return;
+
+    tooltip.classList.remove('visible');
   }
 
   handleUserInput(e) {
-    document.getElementById('user-input').focus();
-    const inputText = e.target.value.trim().toUpperCase();
+    const userInput = document.getElementById('user-input');
+
+    if (this.mapOpen && e.key === 'Escape') {
+      e.preventDefault();
+      this.hideMap();
+      return;
+    }
+
+    if (e.target !== userInput) {
+      userInput.focus();
+      return;
+    }
+
+    const inputText = userInput.value.trim().toUpperCase();
 
     if (e.key.length > 1) {
       e.preventDefault();
     }
 
     if (e.key === 'Backspace') {
-      e.target.value = e.target.value.slice(0, -1);
+      userInput.value = userInput.value.slice(0, -1);
     }
 
     if (e.key !== 'Enter') return;
     console.log(`User input: '${inputText}'`);
-    e.target.value = '';
+    userInput.value = '';
 
     if (this.itemsManager.hasGameWon()) {
       return;
